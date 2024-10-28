@@ -46,11 +46,6 @@ fn sample(n_leaves: usize, ordered: bool) -> Vec<usize> {
     v
 }
 
-#[pyfunction]
-fn sample_unordered(n_leaves: usize) -> Vec<usize> {
-    let v = _utils::sample_unordered(n_leaves);
-    v
-}
 
 
 /// This module is exposed to Python.
@@ -60,8 +55,7 @@ fn _phylo2vec_core(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(build_newick, m)?)?;
     m.add_function(wrap_pyfunction!(get_ancestry, m)?)?;
     m.add_function(wrap_pyfunction!(get_pairs, m)?)?;
-    m.add_function(wrap_pyfunction!(sample_ordered, m)?)?;
-    m.add_function(wrap_pyfunction!(sample_unordered, m)?)?;
+    m.add_function(wrap_pyfunction!(sample, m)?)?;
     Ok(())
 }
 
