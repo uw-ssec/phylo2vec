@@ -70,23 +70,19 @@ pub fn check_v(v: &Vec<usize>) {
 
 #[cfg(test)]
 mod tests {
+    use rstest::rstest;
     use super::*;
 
-    #[test]
-    fn test_sample() {
-        let v = sample(20, SampleOrdering::Ordered);
-        assert_eq!(v.len(), 19);
-        for i in 0..19 {
-            assert!(v[i] <= i);
+    #[rstest]
+    #[case(20, SampleOrdering::Ordered, 1)]
+    #[case(20, SampleOrdering::NotOrdered, 2)]
+    fn test_sample(#[case] n_leaves: usize, #[case] ordering: SampleOrdering, #[case] scale: usize) {
+        let v = sample(n_leaves, ordering);
+        assert_eq!(v.len(), n_leaves - 1);
+        check_v(&v);
+        for i in 0..(n_leaves - 1) {
+            assert!(v[i] <= scale * i);
         };
-        check_v(&v);
-
-        let v = sample(20, SampleOrdering::NotOrdered);
-        assert_eq!(v.len(), 19);
-        check_v(&v);
-        for i in 0..19 {
-            assert!(v[i] <= 2 * i);
-        }
     }
 
     #[test]

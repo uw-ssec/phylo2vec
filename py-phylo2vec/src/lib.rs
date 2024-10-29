@@ -1,6 +1,6 @@
 use pyo3::prelude::*;
 
-pub use::phylo2vec::to_newick as _to_newick;
+pub use phylo2vec::to_newick as _to_newick;
 pub use phylo2vec::utils as _utils;
 // pub use crate::core::to_vector as _to_vector;
 
