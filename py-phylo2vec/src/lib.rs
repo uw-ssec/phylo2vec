@@ -32,9 +32,9 @@ fn build_newick(input_ancestry: Vec<(usize, usize, usize)>) -> String {
 }
 
 #[pyfunction]
-#[pyo3(signature = (n_leaves, ordered=true, /), text_signature = "(n_leaves, ordered=True, /)")]
+#[pyo3(signature = (n_leaves, ordered=false, /), text_signature = "(n_leaves, ordered=False, /)")]
 fn sample(n_leaves: usize, ordered: bool) -> Vec<usize> {
-    let v;
+    let v: Vec<usize>;
     match ordered {
         true => {
             v = _utils::sample(n_leaves, _utils::SampleOrdering::Ordered);
@@ -46,6 +46,10 @@ fn sample(n_leaves: usize, ordered: bool) -> Vec<usize> {
     v
 }
 
+#[pyfunction]
+fn check_v(input_vector: Vec<usize>) {
+    _utils::check_v(&input_vector);
+}
 
 
 /// This module is exposed to Python.
@@ -56,6 +60,7 @@ fn _phylo2vec_core(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(get_ancestry, m)?)?;
     m.add_function(wrap_pyfunction!(get_pairs, m)?)?;
     m.add_function(wrap_pyfunction!(sample, m)?)?;
+    m.add_function(wrap_pyfunction!(check_v, m)?)?;
     Ok(())
 }
 
