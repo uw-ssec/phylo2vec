@@ -85,14 +85,12 @@ mod tests {
         };
     }
 
-    #[test]
-    fn test_check_v() {
-        check_v(&vec![0, 0, 2, 1, 0]);
-    }
-
-    #[test]
+    #[rstest]
+    #[case(vec![0, 0, 1])]
+    #[case(vec![0, 0, 2, 1, 8])]
     #[should_panic]
-    fn test_check_v_should_panic() {
-        check_v(&vec![0, 0, 9, 1]);
+    #[case(vec![0, 0, 9, 1])]
+    fn test_check_v(#[case] v: Vec<usize>) {
+        check_v(&v);
     }
 }
