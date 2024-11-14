@@ -14,7 +14,7 @@ permissions:
   contents: read
 
 env:
-  MATURIN_MANIFEST_PATH: ./py-phylo2vec
+  MATURIN_MANIFEST_PATH: ./py-phylo2vec/Cargo.toml
 
 jobs:
   linux:
