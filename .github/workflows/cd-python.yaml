@@ -13,13 +13,15 @@ on:
 permissions:
   contents: read
 
-defaults:
-  run:
-    working-directory: ./py-phylo2vec
+env:
+  WORKING_DIRECTORY: ./py-phylo2vec
 
 jobs:
   linux:
     runs-on: ${{ matrix.platform.runner }}
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIRECTORY }}
     strategy:
       matrix:
         platform:
@@ -55,6 +57,9 @@ jobs:
 
   musllinux:
     runs-on: ${{ matrix.platform.runner }}
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIRECTORY }}
     strategy:
       matrix:
         platform:
@@ -86,6 +91,9 @@ jobs:
 
   windows:
     runs-on: ${{ matrix.platform.runner }}
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIRECTORY }}
     strategy:
       matrix:
         platform:
@@ -113,6 +121,9 @@ jobs:
 
   macos:
     runs-on: ${{ matrix.platform.runner }}
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIRECTORY }}
     strategy:
       matrix:
         platform:
@@ -139,6 +150,9 @@ jobs:
 
   sdist:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIRECTORY }}
     steps:
       - uses: actions/checkout@v4
       - name: Build sdist
@@ -155,6 +169,9 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ${{ env.WORKING_DIRECTORY }}
     if: ${{ startsWith(github.ref, 'refs/tags/') }}
     needs: [linux, musllinux, windows, macos, sdist]
     permissions:
