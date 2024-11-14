@@ -13,6 +13,10 @@ on:
 permissions:
   contents: read
 
+defaults:
+  run:
+    working-directory: ./py-phylo2vec
+
 jobs:
   linux:
     runs-on: ${{ matrix.platform.runner }}
