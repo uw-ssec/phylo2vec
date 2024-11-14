@@ -44,31 +44,55 @@ impl AVLTree {
         }
     }
 
-    fn update(node: &mut Option<Box<Node>>) {
-        if let Some(ref mut n) = node {
-            n.height = 1 + usize::max(Self::get_height(&n.left), Self::get_height(&n.right));
-            n.size = 1 + Self::get_size(&n.left) + Self::get_size(&n.right);
-        }
+    fn update(n: &mut Box<Node>) {
+        n.height = 1 + usize::max(Self::get_height(&n.left), Self::get_height(&n.right));
+        n.size = 1 + Self::get_size(&n.left) + Self::get_size(&n.right);
     }
 
     fn right_rotate(y: &mut Option<Box<Node>>) -> Option<Box<Node>> {
-        let mut y_node = y.take().unwrap();
-        let mut x_node = y_node.left.take().unwrap();
-        y_node.left = x_node.right.take();
-        Self::update(y);
-        Self::update(&mut y_node.left);
-        x_node.right = Some(y_node);
-        Some(x_node)
+        if let Some(mut y_node) = y.take() {
+            if let Some(mut x) = y_node.left.take() {
+                // Perform rotation
+                let t2 = x.right.take();
+                x.right = Some(y_node);
+                x.right.as_mut().unwrap().left = t2;
+    
+                // Update heights
+                Self::update(x.right.as_mut().unwrap());
+                Self::update(&mut x);
+    
+                return Some(x);
+            } else {
+                // If no left child, revert the state and return `None`
+                *y = Some(y_node);
+                None
+            }
+        } else {
+            None
+        }
     }
 
     fn left_rotate(x: &mut Option<Box<Node>>) -> Option<Box<Node>> {
-        let mut x_node = x.take().unwrap();
-        let mut y_node = x_node.right.take().unwrap();
-        x_node.right = y_node.left.take();
-        Self::update(x);
-        Self::update(&mut x_node.right);
-        y_node.left = Some(x_node);
-        Some(y_node)
+        if let Some(mut x_node) = x.take() {
+            if let Some(mut y) = x_node.right.take() {
+                // Perform rotation
+                let t2 = y.left.take();
+                y.left = Some(x_node);
+                y.left.as_mut().unwrap().right = t2;
+    
+                // Update heights
+                Self::update(y.left.as_mut().unwrap());
+                Self::update(&mut y);
+    
+                return Some(y);
+            } else {
+                // If no right child, revert the state and return `None`
+                *x = Some(x_node);
+                None
+            }
+        } else {
+            None
+        }
     }
 
     fn get_balance(node: &Option<Box<Node>>) -> isize {
@@ -120,9 +144,8 @@ impl AVLTree {
             n.right = Self::insert_by_index(n.right.take(), value, index - left_size - 1);
         }
 
-        let z = &mut Some(n);
-        Self::update(z);
-        Self::balance(z)
+        Self::update(&mut n);
+        return Self::balance(&mut Some(n));
     }
 
     // fn insert_by_index(node: &mut Option<Box<Node>>, value: Pair, index: usize) -> Option<Box<Node>> {
