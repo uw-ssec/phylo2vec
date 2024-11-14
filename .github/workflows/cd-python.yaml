@@ -14,14 +14,11 @@ permissions:
   contents: read
 
 env:
-  WORKING_DIRECTORY: ./py-phylo2vec
+  MATURIN_MANIFEST_PATH: ./py-phylo2vec
 
 jobs:
   linux:
     runs-on: ${{ matrix.platform.runner }}
-    defaults:
-      run:
-        working-directory: ${{ env.WORKING_DIRECTORY }}
     strategy:
       matrix:
         platform:
@@ -46,7 +43,7 @@ jobs:
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.platform.target }}
-          args: --release --out dist
+          args: --release --out dist --manifest-path ${{ env.MATURIN_MANIFEST_PATH }}
           sccache: 'true'
           manylinux: auto
       - name: Upload wheels
@@ -80,7 +77,7 @@ jobs:
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.platform.target }}
-          args: --release --out dist
+          args: --release --out dist --manifest-path ${{ env.MATURIN_MANIFEST_PATH }}
           sccache: 'true'
           manylinux: musllinux_1_2
       - name: Upload wheels
@@ -91,9 +88,6 @@ jobs:
 
   windows:
     runs-on: ${{ matrix.platform.runner }}
-    defaults:
-      run:
-        working-directory: ${{ env.WORKING_DIRECTORY }}
     strategy:
       matrix:
         platform:
@@ -111,7 +105,7 @@ jobs:
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.platform.target }}
-          args: --release --out dist
+          args: --release --out dist --manifest-path ${{ env.MATURIN_MANIFEST_PATH }}
           sccache: 'true'
       - name: Upload wheels
         uses: actions/upload-artifact@v4
@@ -121,9 +115,6 @@ jobs:
 
   macos:
     runs-on: ${{ matrix.platform.runner }}
-    defaults:
-      run:
-        working-directory: ${{ env.WORKING_DIRECTORY }}
     strategy:
       matrix:
         platform:
@@ -140,7 +131,7 @@ jobs:
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.platform.target }}
-          args: --release --out dist
+          args: --release --out dist --manifest-path ${{ env.MATURIN_MANIFEST_PATH }}
           sccache: 'true'
       - name: Upload wheels
         uses: actions/upload-artifact@v4
@@ -150,16 +141,13 @@ jobs:
 
   sdist:
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: ${{ env.WORKING_DIRECTORY }}
     steps:
       - uses: actions/checkout@v4
       - name: Build sdist
         uses: PyO3/maturin-action@v1
         with:
           command: sdist
-          args: --out dist
+          args: --out dist --manifest-path ${{ env.MATURIN_MANIFEST_PATH }}
       - name: Upload sdist
         uses: actions/upload-artifact@v4
         with:
