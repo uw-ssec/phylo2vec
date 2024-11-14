@@ -148,23 +148,6 @@ impl AVLTree {
         return Self::balance(&mut Some(n));
     }
 
-    // fn insert_by_index(node: &mut Option<Box<Node>>, value: Pair, index: usize) -> Option<Box<Node>> {
-    //     if node.is_none() {
-    //         return Some(Box::new(Node::new(value)));
-    //     }
-
-    //     let n = node.as_mut().unwrap();
-    //     let left_size = Self::get_size(&n.left);
-    //     if index <= left_size {
-    //         n.left = Self::insert_by_index(&mut n.left, value, index);
-    //     } else {
-    //         n.right = Self::insert_by_index(&mut n.right, value, index - left_size - 1);
-    //     }
-
-    //     Self::update(node);
-    //     Self::balance(node)
-    // }
-
     pub fn lookup(&self, index: usize) -> Pair {
         Self::lookup_node(&self.root, index).unwrap_or((0, 0))
     }
