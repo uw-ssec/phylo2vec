@@ -14,5 +14,4 @@ description = "Phylo2Vec: integer vector representation of binary (phylogenetic)
 license = "LGPL-3.0"
 
 [workspace.dependencies]
-openssl = { version = "0.10.68", features = ["vendored"] }
 phylo2vec = { path = "phylo2vec", default-features = false }
