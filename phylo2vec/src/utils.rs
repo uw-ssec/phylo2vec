@@ -47,18 +47,18 @@ pub fn sample(n_leaves: usize, ordering: bool) -> Vec<usize> {
 /// use phylo2vec::utils::check_v;
 /// check_v(&vec![0, 0, 1]);
 /// ```
-pub fn check_v(v: &Vec<usize>) -> (){
+pub fn check_v(v: &Vec<usize>) -> () {
     for i in 0..v.len() {
         _check_max(i, v[i]);
     }
 }
 
 /// Validate the maximum value of a Phylo2Vec vector element
-/// 
+///
 /// # Panics
-/// 
+///
 /// Panics if the value is out of bounds (max = 2 * idx)
-fn _check_max(idx: usize, value: usize) -> (){
+fn _check_max(idx: usize, value: usize) -> () {
     let absolute_max = 2 * idx;
     assert!(
         value <= absolute_max,
@@ -70,26 +70,26 @@ fn _check_max(idx: usize, value: usize) -> (){
 }
 
 /// Check if a Phylo2Vec vector is unordered
-/// 
+///
 /// # Panics
-/// 
+///
 /// Panics if any element of the input vector is out of bounds
-/// 
+///
 /// # Returns
-/// 
+///
 /// Returns true if the vector is unordered, false otherwise
-/// 
+///
 /// # Examples
-/// 
+///
 /// ```
 /// use phylo2vec::utils::is_unordered;
-/// 
+///
 /// let unordered = is_unordered(&vec![0, 0, 0, 3, 2, 9, 4, 1, 12]);
-/// 
+///
 /// assert_eq!(unordered, true);
-/// 
+///
 /// let unordered = is_unordered(&vec![0, 0, 0, 1, 3, 3, 1, 4, 4]);
-/// 
+///
 /// assert_eq!(unordered, false);
 /// ```
 pub fn is_unordered(v: &Vec<usize>) -> bool {
