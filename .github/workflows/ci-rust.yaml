@@ -18,8 +18,10 @@ jobs:
       matrix:
         toolchain:
           - stable
-          - beta
-          - nightly
+          # Commenting out the following lines will enable the beta and nightly builds
+          # currently not in use since we can't format the code with the beta and nightly builds
+          # - beta
+          # - nightly
     steps:
       - uses: actions/checkout@v4
       - name: Setup Rust
