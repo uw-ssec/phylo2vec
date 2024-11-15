@@ -1,0 +1,32 @@
+name: CI Rust
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+
+env: 
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build_and_test:
+    name: Rust project - latest
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        toolchain:
+          - stable
+          - beta
+          - nightly
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Rust
+        run: rustup update ${{ matrix.toolchain }} && rustup default ${{ matrix.toolchain }}
+      - name: Run linter
+        run: cargo fmt --check
+      - name: Compile Code
+        run: cargo build --verbose
+      - name: Run tests
+        run: cargo test --verbose
