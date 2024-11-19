@@ -1,6 +1,7 @@
 use crate::utils::sample;
 
 pub mod ops;
+use ops::{build_vector, find_coords_of_first_leaf, order_cherries, order_cherries_no_parents};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct TreeVec {
@@ -40,12 +41,77 @@ impl TreeVec {
         return ops::get_ancestry(&self.data);
     }
 
-    pub fn add_leaf(leaf: usize, branch: usize) -> Self {
-        unimplemented!();
+    // add_leaf, remove_leaf, find_coords_of_first_leaf, order_cherries, order_cherries_no_parents, build_vector
+
+    pub fn add_leaf(&mut self, leaf: usize, branch: usize) {
+        self.data.push(branch);
+        
+        let ancestry_add = self.get_ancestry();
+
+        let leaf_coords = find_coords_of_first_leaf(&ancestry_add, self.n_leaf);
+        let leaf_row = leaf_coords.0;
+        let leaf_col = leaf_coords.1;
+
+        ancestry_add[leaf_row][leaf_col] = -1;
+
+        for r in 0..ancestry_add.len() {
+            for c in 0..3 {
+                if ancestry_add[r][c] >= leaf {
+                    ancestry_add[r][c] += 1;
+                }
+            }
+        }
+
+        ancestry_add[leaf_row][leaf_col] = leaf;
+        // let ancestry_add_ref = &mut ancestry_add;
+        order_cherries(&mut ancestry_add);
+        order_cherries_no_parents(&mut ancestry_add);
+        self.data = build_vector(ancestry_add);
+
     }
 
-    pub fn remove_leaf(leaf: usize) -> Self {
-        unimplemented!();
+    pub fn remove_leaf(&mut self, leaf: usize) -> usize {
+        let ancestry = self.get_ancestry();
+        let leaf_coords = find_coords_of_first_leaf(&ancestry, self.n_leaf);
+        let leaf_row = leaf_coords.0;
+        let leaf_col = leaf_coords.1;
+        
+        let parent = ancestry[leaf_row][2];
+        let sister = ancestry[leaf_row][1 - leaf_col];
+
+        let num_cherries = ancestry.len();
+        let ancestry_rm = Vec::with_capacity(num_cherries - 1);
+
+        for r in 0..num_cherries - 1 {
+            if r < leaf_row {
+                ancestry_rm[r] = ancestry[r];
+            } else {
+                ancestry_rm[r] = ancestry[r + 1];
+            }
+
+            for c in 0..3 {
+                let node = ancestry_rm[r][c];
+                if node == parent {
+                    node = sister;
+                }
+
+                if node > leaf {
+                    node -= 1;
+
+                    if node >= parent {
+                        node -= 1;
+                    }
+                }
+
+                ancestry_rm[r][c] = node;
+            }
+        }
+
+        order_cherries(&mut ancestry_rm);
+        order_cherries_no_parents(&mut ancestry_rm);
+        self.data = build_vector(ancestry_rm);
+
+        return sister;
     }
 }
 

@@ -187,3 +187,103 @@ pub fn to_newick(v: &Vec<usize>) -> String {
     let ancestry: Ancestry = get_ancestry(&v);
     build_newick(&ancestry)
 }
+
+pub fn find_coords_of_first_leaf(ancestry: &Ancestry, leaf: usize) -> (usize, usize) {
+    for r in 0..ancestry.len() {
+        for c in 0..3 {
+            if ancestry[r][c] == leaf {
+                return (r, c);
+            }
+        }
+    }
+    panic!("Leaf not found in ancestry");
+}
+
+pub fn order_cherries(ancestry: &mut Ancestry) {
+    let num_cherries = ancestry.len();
+    let num_nodes = 2 * num_cherries + 1;
+
+    let mut min_desc = vec![-1; num_nodes];
+
+    // Sort by the parent node (ascending order)
+    ancestry.sort_by_key(|&(_, _, p)| p);
+    // ancestry.sort_by(|a, b| a.2.cmp(&b.2));
+
+    for (c1, c2, p) in ancestry.iter_mut() {
+        // Get the minimum descendant of c1 and c2 (if they exist)
+        // min_desc[child_x] doesn't exist, min_desc_x --> child_x
+        let min_desc1 = if min_desc[*c1] != -1 { min_desc[*c1] } else { *c1 as i32 };
+        let min_desc2 = if min_desc[*c2] != -1 { min_desc[*c2] } else { *c2 as i32 };
+
+        // Collect the minimum descendant and allocate it to min_desc[parent]
+        let desc_min = std::cmp::min(min_desc1, min_desc2);
+        min_desc[*p] = desc_min;
+
+        // Instead of the parent, we collect the max node
+        let desc_max = std::cmp::max(min_desc1, min_desc2);
+        *c1 = min_desc1 as usize;
+        *c2 = min_desc2 as usize;
+        *p = desc_max as usize;
+    }
+}
+
+pub fn order_cherries_no_parents(ancestry: &mut Ancestry) {
+    let num_cherries = ancestry.len();
+
+    for i in 0..num_cherries {
+        // Find the next index to process:
+        // The goal is to find the row with the highest leaf
+        // where both leaves were previously un-visited
+        // why? If a leaf in a cherry already appeared in the ancestry,
+        // it means that leaf was already involved in a shallower cherry
+        let mut idx = i;
+
+        // Initially, all cherries have not been processed
+        let mut unvisited = vec![true; num_cherries + 1];
+
+        // Temporary max leaf
+        let mut max_leaf = 0;
+
+        for j in i..num_cherries {
+            let (c1, c2, c_max) = ancestry[j];
+
+            if c_max > max_leaf {
+                if unvisited[c1] && unvisited[c2] {
+                    max_leaf = c_max;
+                    idx = j;
+                }
+            }
+
+            // c1 and c2 have been processed
+            unvisited[c1] = false;
+            unvisited[c2] = false;
+        }
+
+        // Move row idx to row i
+        if idx != i {
+            ancestry[i..=idx].rotate_right(1);
+        }
+    }
+}
+
+pub fn build_vector(cherries: Ancestry) -> Vec<usize> {
+    let num_cherries = cherries.len();
+    let num_leaves = num_cherries + 1;
+
+    let mut v = vec![0; num_cherries];
+    let mut idxs = vec![0; num_leaves];
+
+    // Note: v[0] is always 0
+    // but starting with i = 1 makes some tests fail (weird)
+    for i in 0..num_cherries {
+        let (c1, c2, c_max) = cherries[i];
+        let mut idx = 0;
+        for j in 1..c_max {
+            idx += idxs[j];
+        }
+        // Reminder: v[i] = j --> branch i yields leaf j
+        v[c_max - 1] = if idx == 0 { std::cmp::min(c1, c2) } else { c_max - 1 + idx };
+        idxs[c_max] = 1;
+    }
+    return v;
+}
