@@ -5,14 +5,12 @@ use criterion::{criterion_group, BenchmarkId, Criterion};
 use phylo2vec::tree_vec::ops;
 use phylo2vec::utils::{is_unordered, sample};
 
+pub type AncestryTuple = Vec<(usize, usize, usize)>;
 pub type AncestryVec = Vec<[usize; 3]>;
 pub type AncestryNDArray = ndarray::Array2<usize>;
 
 const RANGE: Range<u32> = 8..18;
 
-// TODO: Add more benchmarks for different ancestry matrix types
-// Use ordered sample of size 2^8 to 2^17
-// Show graph of tuple, vector, and NDArray
 fn compare_get_ancestry_datatypes(c: &mut Criterion) {
     let mut group = c.benchmark_group("get_ancestry_datatypes");
     // compare the three functions with three different data types
@@ -21,7 +19,7 @@ fn compare_get_ancestry_datatypes(c: &mut Criterion) {
         let v = sample(i, true);
         group.bench_with_input(BenchmarkId::new("tuple", i), &v, |b, v| {
             b.iter(|| {
-                ops::get_ancestry(v);
+                get_ancestry_tuple(v);
             });
         });
         group.bench_with_input(BenchmarkId::new("vector", i), &v, |b, v| {
@@ -36,6 +34,52 @@ fn compare_get_ancestry_datatypes(c: &mut Criterion) {
         });
     }
     group.finish();
+}
+
+pub fn get_ancestry_tuple(v: &Vec<usize>) -> AncestryTuple {
+    let pairs: ops::vector::PairsVec;
+
+    // Determine the implementation to use
+    // based on whether this is an ordered
+    // or unordered tree vector
+    match is_unordered(&v) {
+        true => {
+            pairs = ops::get_pairs_avl(&v);
+        }
+        false => {
+            pairs = ops::get_pairs(&v);
+        }
+    }
+    let num_of_leaves = v.len();
+    // Initialize Ancestry with capacity `k`
+    let mut ancestry: AncestryTuple = Vec::with_capacity(num_of_leaves);
+    // Keep track of child->highest parent relationship
+    let mut parents: Vec<isize> = vec![-1; 2 * num_of_leaves + 1];
+
+    for i in 0..num_of_leaves {
+        let (c1, c2) = pairs[i];
+
+        let parent_of_child1 = if parents[c1] != -1 {
+            parents[c1] as usize
+        } else {
+            c1
+        };
+        let parent_of_child2 = if parents[c2] != -1 {
+            parents[c2] as usize
+        } else {
+            c2
+        };
+
+        // Next parent
+        let next_parent = (num_of_leaves + i + 1) as isize;
+        ancestry.push((parent_of_child1, parent_of_child2, next_parent as usize));
+
+        // Update the parents of current children
+        parents[c1] = next_parent;
+        parents[c2] = next_parent;
+    }
+
+    ancestry
 }
 
 pub fn get_ancestry_vec(v: &Vec<usize>) -> AncestryVec {
