@@ -1,7 +1,7 @@
 use crate::utils::sample;
 
 pub mod ops;
-use ops::{build_vector, find_coords_of_first_leaf, order_cherries, order_cherries_no_parents};
+use ops::{build_vector, find_coords_of_first_leaf, order_cherries, order_cherries_no_parents, Ancestry};
 
 #[derive(Debug, PartialEq, Clone)]
 pub struct TreeVec {
@@ -37,7 +37,7 @@ impl TreeVec {
         return ops::to_newick(&self.data);
     }
 
-    pub fn get_ancestry(&self) -> Vec<(usize, usize, usize)> {
+    pub fn get_ancestry(&self) -> Ancestry {
         return ops::get_ancestry(&self.data);
     }
 
@@ -46,23 +46,30 @@ impl TreeVec {
     pub fn add_leaf(&mut self, leaf: usize, branch: usize) {
         self.data.push(branch);
         
-        let ancestry_add = self.get_ancestry();
+        let mut ancestry_add = self.get_ancestry();
 
-        let leaf_coords = find_coords_of_first_leaf(&ancestry_add, self.n_leaf);
-        let leaf_row = leaf_coords.0;
-        let leaf_col = leaf_coords.1;
+        // let leaf_coords = find_coords_of_first_leaf(&ancestry_add, self.n_leaf);
+        // let leaf_row = leaf_coords.0;
+        // let leaf_col = leaf_coords.1;
 
-        ancestry_add[leaf_row][leaf_col] = -1;
+        // ancestry_add[leaf_row][leaf_col] = -1;
+        // let mut leaf_coords: (usize, usize);
+        let mut found_first_leaf = false;
 
         for r in 0..ancestry_add.len() {
             for c in 0..3 {
-                if ancestry_add[r][c] >= leaf {
+                if !found_first_leaf && ancestry_add[r][c] == leaf  {
+                    // leaf_coords = (r, c);
+                    ancestry_add[r][c] = leaf;
+                    found_first_leaf = true;
+                }
+                else if ancestry_add[r][c] >= leaf {
                     ancestry_add[r][c] += 1;
                 }
             }
         }
 
-        ancestry_add[leaf_row][leaf_col] = leaf;
+        // ancestry_add[leaf_coords][leaf_col] = leaf as isize;
         // let ancestry_add_ref = &mut ancestry_add;
         order_cherries(&mut ancestry_add);
         order_cherries_no_parents(&mut ancestry_add);
@@ -80,7 +87,7 @@ impl TreeVec {
         let sister = ancestry[leaf_row][1 - leaf_col];
 
         let num_cherries = ancestry.len();
-        let ancestry_rm = Vec::with_capacity(num_cherries - 1);
+        let mut ancestry_rm = Vec::with_capacity(num_cherries - 1);
 
         for r in 0..num_cherries - 1 {
             if r < leaf_row {
@@ -90,7 +97,7 @@ impl TreeVec {
             }
 
             for c in 0..3 {
-                let node = ancestry_rm[r][c];
+                let mut node = ancestry_rm[r][c] as usize;
                 if node == parent {
                     node = sister;
                 }
@@ -159,21 +166,42 @@ mod tests {
     }
 
     #[rstest]
-    #[case(vec![0, 0, 0, 1, 3], vec![( 3,  5,  6),
-        ( 1,  4,  7),
-        ( 0,  6,  8),
-        ( 8,  2,  9),
-        ( 9,  7, 10)])]
-    #[case(vec![0, 1, 2, 3], vec![(3, 4, 5),
-        (2, 5, 6),
-        (1, 6, 7),
-        (0, 7, 8)])]
-    #[case(vec![0, 0, 1], vec![(1, 3, 4),
-        (0, 2, 5),
-        (5, 4, 6)])]
-    fn test_get_ancestry(#[case] v: Vec<usize>, #[case] expected: Vec<(usize, usize, usize)>) {
+    #[case(vec![0, 0, 0, 1, 3], vec![[3, 5, 6],
+        [1, 4, 7],
+        [0, 6, 8],
+        [8, 2, 9],
+        [9, 7, 10]])]
+    #[case(vec![0, 1, 2, 3], vec![[3, 4, 5],
+        [2, 5, 6],
+        [1, 6, 7],
+        [0, 7, 8]])]
+    #[case(vec![0, 0, 1], vec![[1, 3, 4],
+        [0, 2, 5],
+        [5, 4, 6]])]
+    fn test_get_ancestry(#[case] v: Vec<usize>, #[case] expected: Ancestry) {
         let tree = TreeVec::new(v, None, None);
         let ancestry = tree.get_ancestry();
         assert_eq!(ancestry, expected);
+    }
+
+    #[rstest]
+    #[case(vec![0, 0, 0, 1, 3], 5, 0, vec![0, 0, 0, 1, 0, 3])]
+    #[case(vec![0, 1, 2, 3], 4, 1, vec![0, 1, 2, 3, 1])]
+    #[case(vec![0, 0, 1], 3, 1, vec![0, 0, 1, 1])]
+    fn test_add_leaf(#[case] v: Vec<usize>, #[case] leaf: usize, #[case] branch: usize, #[case] expected: Vec<usize>) {
+        let mut tree = TreeVec::new(v, None, None);
+        tree.add_leaf(leaf, branch);
+        assert_eq!(tree.data, expected);
+    }
+
+    #[rstest]
+    #[case(vec![0, 0, 0, 1, 3], 5, 0, vec![0, 0, 0, 1, 3])]
+    #[case(vec![0, 1, 2, 3], 4, 1, vec![0, 1, 2, 3])]
+    #[case(vec![0, 0, 1], 3, 1, vec![0, 0, 1])]
+    fn test_remove_leaf(#[case] v: Vec<usize>, #[case] leaf: usize, #[case] branch: usize, #[case] expected: Vec<usize>) {
+        let mut tree = TreeVec::new(v, None, None);
+        let sister = tree.remove_leaf(leaf);
+        assert_eq!(tree.data, expected);
+        assert_eq!(sister, branch);
     }
 }
