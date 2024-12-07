@@ -202,7 +202,7 @@ pub fn find_coords_of_first_leaf(ancestry: &Ancestry, leaf: usize) -> (usize, us
 
 pub fn order_cherries(ancestry: &mut Ancestry) {
     let num_cherries = ancestry.len();
-    let num_nodes = 2 * num_cherries + 1;
+    let num_nodes = 2 * num_cherries + 2;
 
     let mut min_desc = vec![usize::MAX; num_nodes];
 
@@ -218,18 +218,19 @@ pub fn order_cherries(ancestry: &mut Ancestry) {
 
         // Collect the minimum descendant and allocate it to min_desc[parent]
         let desc_min = std::cmp::min(min_desc1, min_desc2);
-        if p < num_nodes {
-            min_desc[p] = desc_min;
-        }
+        min_desc[p] = desc_min;
 
         // Instead of the parent, we collect the max node
         let desc_max = std::cmp::max(min_desc1, min_desc2);
-        ancestry[i] = [c1, c2, desc_max];
+        ancestry[i] = [min_desc1, min_desc2, desc_max];
     }
 }
 
 pub fn order_cherries_no_parents(ancestry: &mut Ancestry) {
+    let old_ancestry = ancestry.clone();
     let num_cherries = ancestry.len();
+    let mut visited_indexes: Vec<usize> = Vec::with_capacity(num_cherries);
+    let mut idx = usize::MAX;
 
     for i in 0..num_cherries {
         // Find the next index to process:
@@ -237,8 +238,7 @@ pub fn order_cherries_no_parents(ancestry: &mut Ancestry) {
         // where both leaves were previously un-visited
         // why? If a leaf in a cherry already appeared in the ancestry,
         // it means that leaf was already involved in a shallower cherry
-        let mut idx = usize::MAX;
-        let mut indexes = vec![0; num_cherries];
+        // let mut idx = usize::MAX;
 
         // Initially, all cherries have not been processed
         let mut unvisited = vec![true; num_cherries + 1];
@@ -246,19 +246,16 @@ pub fn order_cherries_no_parents(ancestry: &mut Ancestry) {
         // Temporary max leaf
         let mut max_leaf = 0;
 
-        for j in i..num_cherries {
-            if indexes[j] == 1 {
+        for j in 0..old_ancestry.len() {
+            if visited_indexes.contains(&j) {
                 continue;
             }
+
+            let [c1, c2, c_max] = old_ancestry[j];
+
             
-            let [c1, c2, c_max] = ancestry[j];
-
-            if c2 >= unvisited.len() || c1 >= unvisited.len() {
-                continue;
-            }
-
-            if c_max > max_leaf {
-                if unvisited[c1] && unvisited[c2] {
+            if unvisited[c1] && unvisited[c2] {
+                if c_max > max_leaf {
                     max_leaf = c_max;
                     idx = j;
                 }
@@ -268,18 +265,9 @@ pub fn order_cherries_no_parents(ancestry: &mut Ancestry) {
             unvisited[c1] = false;
             unvisited[c2] = false;
         }
+        ancestry[i] = old_ancestry[idx];
+        visited_indexes.push(idx);
 
-        // if idx != usize::MAX && idx != i {
-        //     ancestry[i..=idx].rotate_right(1);
-        // }
-
-        // Move row idx to row i
-        if idx != usize::MAX {
-            if idx != i {
-                ancestry[i..=idx].rotate_right(1);
-            }
-            indexes[idx] = 1;
-        }
     }
 }
 
@@ -290,14 +278,11 @@ pub fn build_vector(cherries: Ancestry) -> Vec<usize> {
     let mut v = vec![0; num_cherries];
     let mut idxs = vec![0; num_leaves];
 
-    // Note: v[0] is always 0
-    // but starting with i = 1 makes some tests fail (weird)
     for i in 0..num_cherries {
         let [c1, c2, c_max] = cherries[i];
-        if c_max >= num_cherries {
-            continue;
-        }
+        
         let mut idx = 0;
+
         for j in 1..c_max {
             idx += idxs[j];
         }

@@ -48,18 +48,13 @@ impl TreeVec {
         
         let mut ancestry_add = self.get_ancestry();
 
-        // let leaf_coords = find_coords_of_first_leaf(&ancestry_add, self.n_leaf);
-        // let leaf_row = leaf_coords.0;
-        // let leaf_col = leaf_coords.1;
-
-        // ancestry_add[leaf_row][leaf_col] = -1;
-        // let mut leaf_coords: (usize, usize);
+        println!("{:?}", ancestry_add);
         let mut found_first_leaf = false;
-
         for r in 0..ancestry_add.len() {
             for c in 0..3 {
-                if !found_first_leaf && ancestry_add[r][c] == leaf  {
-                    // leaf_coords = (r, c);
+                if !found_first_leaf && ancestry_add[r][c] == self.data.len()  {
+                    // Find the indices of the first leaf
+                    // and then set the value to the new leaf
                     ancestry_add[r][c] = leaf;
                     found_first_leaf = true;
                 }
@@ -185,9 +180,9 @@ mod tests {
     }
 
     #[rstest]
-    #[case(vec![0, 0, 0, 1, 3], 5, 0, vec![0, 0, 0, 1, 0, 3])]
-    #[case(vec![0, 1, 2, 3], 4, 1, vec![0, 1, 2, 3, 1])]
-    #[case(vec![0, 0, 1], 3, 1, vec![0, 0, 1, 1])]
+    #[case(vec![0, 1, 2, 5, 4, 2], 5, 3, vec![0, 1, 2, 5, 3, 4, 2])]
+    #[case(vec![0, 1, 2, 5, 4, 2], 7, 0, vec![0, 1, 2, 5, 4, 2, 0])]
+    #[case(vec![0, 1, 2, 5, 4, 2], 7, 2, vec![0, 1, 2, 5, 4, 2, 2])]
     fn test_add_leaf(#[case] v: Vec<usize>, #[case] leaf: usize, #[case] branch: usize, #[case] expected: Vec<usize>) {
         let mut tree = TreeVec::new(v, None, None);
         tree.add_leaf(leaf, branch);
