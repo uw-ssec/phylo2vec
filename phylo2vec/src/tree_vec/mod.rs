@@ -74,39 +74,44 @@ impl TreeVec {
 
     pub fn remove_leaf(&mut self, leaf: usize) -> usize {
         let ancestry = self.get_ancestry();
-        let leaf_coords = find_coords_of_first_leaf(&ancestry, self.n_leaf);
+        let leaf_coords = find_coords_of_first_leaf(&ancestry, leaf);
         let leaf_row = leaf_coords.0;
         let leaf_col = leaf_coords.1;
-
+    
+        // Find the parent of the leaf to remove
         let parent = ancestry[leaf_row][2];
         let sister = ancestry[leaf_row][1 - leaf_col];
-
         let num_cherries = ancestry.len();
+    
         let mut ancestry_rm = Vec::with_capacity(num_cherries - 1);
-
+    
         for r in 0..num_cherries - 1 {
-            if r < leaf_row {
-                ancestry_rm[r] = ancestry[r];
+            let mut new_row = if r < leaf_row {
+                ancestry[r].clone()
             } else {
-                ancestry_rm[r] = ancestry[r + 1];
-            }
-
+                ancestry[r + 1].clone()
+            };
+    
             for c in 0..3 {
-                let mut node = ancestry_rm[r][c] as usize;
+                let mut node = new_row[c];
+                
                 if node == parent {
                     node = sister;
                 }
-
+    
+                // Subtract 1 for leaves > "leaf"
+                // (so that the vector is still valid)
                 if node > leaf {
                     node -= 1;
-
                     if node >= parent {
                         node -= 1;
                     }
                 }
-
-                ancestry_rm[r][c] = node;
+    
+                new_row[c] = node;
             }
+    
+            ancestry_rm.push(new_row);
         }
 
         order_cherries(&mut ancestry_rm);
@@ -195,9 +200,9 @@ mod tests {
     }
 
     #[rstest]
-    #[case(vec![0, 0, 0, 1, 3], 5, 0, vec![0, 0, 0, 1, 3])]
-    #[case(vec![0, 1, 2, 3], 4, 1, vec![0, 1, 2, 3])]
-    #[case(vec![0, 0, 1], 3, 1, vec![0, 0, 1])]
+    #[case(vec![0, 1, 2, 5, 4, 2], 5, 4, vec![0, 1, 2, 5, 2])]
+    #[case(vec![0, 1, 2, 5, 4, 2], 6, 2, vec![0, 1, 2, 5, 4])]
+    #[case(vec![0, 1, 2, 5, 4, 2], 0, 11, vec![0, 1, 4, 3, 1])]
     fn test_remove_leaf(
         #[case] v: Vec<usize>,
         #[case] leaf: usize,
