@@ -1,8 +1,8 @@
-use std::usize;
 use crate::tree_vec::ops::avl::{AVLTree, Pair};
 use crate::utils::is_unordered;
+use std::usize;
 
-/// A type alias for the Ancestry type, which is a vector of tuples representing (child1, child2, parent)
+/// A type alias for the Ancestry type, which is a vector of vectors representing [child1, child2, parent]
 pub type Ancestry = Vec<[usize; 3]>;
 
 /// A type alias for the PairsVec type, which is a vector of tuples representing (child1, child2)
@@ -213,8 +213,16 @@ pub fn order_cherries(ancestry: &mut Ancestry) {
         let [c1, c2, p] = ancestry[i];
         // Get the minimum descendant of c1 and c2 (if they exist)
         // min_desc[child_x] doesn't exist, min_desc_x --> child_x
-        let min_desc1 = if min_desc[c1] != usize::MAX { min_desc[c1] } else { c1 };
-        let min_desc2 = if min_desc[c2] != usize::MAX { min_desc[c2] } else { c2 };
+        let min_desc1 = if min_desc[c1] != usize::MAX {
+            min_desc[c1]
+        } else {
+            c1
+        };
+        let min_desc2 = if min_desc[c2] != usize::MAX {
+            min_desc[c2]
+        } else {
+            c2
+        };
 
         // Collect the minimum descendant and allocate it to min_desc[parent]
         let desc_min = std::cmp::min(min_desc1, min_desc2);
@@ -245,7 +253,7 @@ pub fn order_cherries_no_parents(ancestry: &mut Ancestry) {
 
         for j in i..num_cherries {
             let [c1, c2, c_max] = ancestry[j];
-            
+
             if c_max > max_leaf {
                 if unvisited[c1] && unvisited[c2] {
                     max_leaf = c_max;
@@ -257,11 +265,10 @@ pub fn order_cherries_no_parents(ancestry: &mut Ancestry) {
             unvisited[c1] = false;
             unvisited[c2] = false;
         }
-        
-        if idx != i {
-            ancestry[i..idx+1].rotate_right(1);
-        }
 
+        if idx != i {
+            ancestry[i..idx + 1].rotate_right(1);
+        }
     }
 }
 
@@ -274,14 +281,18 @@ pub fn build_vector(cherries: Ancestry) -> Vec<usize> {
 
     for i in 0..num_cherries {
         let [c1, c2, c_max] = cherries[i];
-        
+
         let mut idx = 0;
 
         for j in 1..c_max {
             idx += idxs[j];
         }
         // Reminder: v[i] = j --> branch i yields leaf j
-        v[c_max - 1] = if idx == 0 { std::cmp::min(c1, c2) } else { c_max - 1 + idx };
+        v[c_max - 1] = if idx == 0 {
+            std::cmp::min(c1, c2)
+        } else {
+            c_max - 1 + idx
+        };
         idxs[c_max] = 1;
     }
     return v;
