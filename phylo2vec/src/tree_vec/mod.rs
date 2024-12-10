@@ -6,7 +6,7 @@ use ops::{
 };
 
 /// A vector representation of a phylogenetic tree
-/// 
+///
 /// Contains the tree structure, branch lengths, taxa, and rootedness
 #[derive(Debug, PartialEq, Clone)]
 pub struct TreeVec {
@@ -20,7 +20,7 @@ pub struct TreeVec {
 /// Implementation of the `TreeVec` struct
 impl TreeVec {
     /// Creates a new `TreeVec` instance
-    /// 
+    ///
     /// # Arguments
     /// * `data` - Vector containing the tree structure
     /// * `branch_lengths` - Optional vector of branch length tuples (start, end)
@@ -44,7 +44,7 @@ impl TreeVec {
     }
 
     /// Creates a new random tree with specified number of leaves
-    /// 
+    ///
     /// # Arguments
     /// * `n_leaves` - Number of leaves in the tree
     /// * `ordering` - Whether to maintain ordered structure
@@ -57,7 +57,7 @@ impl TreeVec {
     }
 
     /// Converts the tree to Newick format
-    /// 
+    ///
     /// # Returns
     /// A String containing the Newick representation of the tree
     pub fn to_newick(&self) -> String {
@@ -65,16 +65,15 @@ impl TreeVec {
     }
 
     /// Gets the ancestry matrix representation of the tree
-    /// 
+    ///
     /// # Returns
     /// An `Ancestry` type containing parent-child relationships
     pub fn get_ancestry(&self) -> Ancestry {
         return ops::get_ancestry(&self.data);
     }
 
-
     /// Adds a new leaf to the tree
-    /// 
+    ///
     /// # Arguments
     /// * `leaf` - Index of the new leaf to add
     /// * `branch` - Index of the branch to attach the leaf to
@@ -108,9 +107,8 @@ impl TreeVec {
         self.data = build_vector(ancestry_add);
     }
 
-
     /// Removes a leaf from the tree
-    /// 
+    ///
     /// # Arguments
     /// * `leaf` - Index of the leaf to remove
     ///
@@ -192,7 +190,7 @@ mod tests {
     }
 
     /// Test the creation of a new tree from a sample
-    /// 
+    ///
     /// Tests are using 50 leaf tree with ordering and no ordering
     #[rstest]
     #[case(50, true)]
@@ -206,7 +204,7 @@ mod tests {
     }
 
     /// Test the conversion of a tree to Newick format
-    /// 
+    ///
     /// Tests are using 5 or less leaf tree with different structures
     #[rstest]
     #[case(vec![0, 0, 0, 1, 3], "(((0,(3,5)6)8,2)9,(1,4)7)10;")]
@@ -219,7 +217,7 @@ mod tests {
     }
 
     /// Test the retrieval of the ancestry matrix
-    /// 
+    ///
     /// Tests are using 5 or less leaf tree with different structures
     #[rstest]
     #[case(vec![0, 0, 0, 1, 3], vec![[3, 5, 6],
@@ -241,7 +239,7 @@ mod tests {
     }
 
     /// Test the addition of a new leaf to the tree
-    /// 
+    ///
     /// Tests are using 6 leaf tree with different leaf and branch indices
     #[rstest]
     #[case(vec![0, 1, 2, 5, 4, 2], 5, 3, vec![0, 1, 2, 5, 3, 4, 2])]
@@ -259,7 +257,7 @@ mod tests {
     }
 
     /// Test the removal of a leaf from the tree
-    /// 
+    ///
     /// Tests are using 6 leaf tree with different leaf and sister branch indices
     #[rstest]
     #[case(vec![0, 1, 2, 5, 4, 2], 5, 4, vec![0, 1, 2, 5, 2])]
