@@ -77,28 +77,28 @@ impl TreeVec {
         let leaf_coords = find_coords_of_first_leaf(&ancestry, leaf);
         let leaf_row = leaf_coords.0;
         let leaf_col = leaf_coords.1;
-    
+
         // Find the parent of the leaf to remove
         let parent = ancestry[leaf_row][2];
         let sister = ancestry[leaf_row][1 - leaf_col];
         let num_cherries = ancestry.len();
-    
+
         let mut ancestry_rm = Vec::with_capacity(num_cherries - 1);
-    
+
         for r in 0..num_cherries - 1 {
             let mut new_row = if r < leaf_row {
                 ancestry[r].clone()
             } else {
                 ancestry[r + 1].clone()
             };
-    
+
             for c in 0..3 {
                 let mut node = new_row[c];
-                
+
                 if node == parent {
                     node = sister;
                 }
-    
+
                 // Subtract 1 for leaves > "leaf"
                 // (so that the vector is still valid)
                 if node > leaf {
@@ -107,10 +107,10 @@ impl TreeVec {
                         node -= 1;
                     }
                 }
-    
+
                 new_row[c] = node;
             }
-    
+
             ancestry_rm.push(new_row);
         }
 
