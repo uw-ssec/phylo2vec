@@ -1,6 +1,6 @@
 # phylo2vec-rust
 
-This directory contains the core codebase for the phylo2vec written in Rust.
+This directory contains the core codebase for `phylo2vec` package written in Rust.
 
 If you are not familiar with Rust, there are several subdirectories that are important
 within this directory, as well as a configuration file to be aware of:
