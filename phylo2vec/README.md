@@ -3,7 +3,7 @@
 This directory contains the core codebase for the phylo2vec written in Rust.
 
 If you are not familiar with Rust, there are several subdirectories that are important
-within this directory, as well as as configuration file to be aware of:
+within this directory, as well as a configuration file to be aware of:
 
 ```console
 .
