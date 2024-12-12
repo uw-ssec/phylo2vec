@@ -1,6 +1,7 @@
 use crate::tree_vec::ops::avl::AVLTree;
 use crate::tree_vec::types::{Ancestry, Pair, PairsVec};
 use crate::utils::is_unordered;
+use std::collections::HashMap;
 use std::usize;
 
 /// Get the pair of nodes from the Phylo2Vec vector
@@ -158,35 +159,20 @@ pub fn find_coords_of_first_leaf(ancestry: &Ancestry, leaf: usize) -> (usize, us
 
 pub fn order_cherries(ancestry: &mut Ancestry) {
     let num_cherries = ancestry.len();
-    let num_nodes = 2 * num_cherries + 2;
-
-    let mut min_desc = vec![usize::MAX; num_nodes];
 
     // Sort by the parent node (ascending order)
     ancestry.sort_by_key(|x| x[2]);
 
+    let mut small_children: HashMap<usize, usize> = HashMap::new();
+
     for i in 0..num_cherries {
         let [c1, c2, p] = ancestry[i];
-        // Get the minimum descendant of c1 and c2 (if they exist)
-        // min_desc[child_x] doesn't exist, min_desc_x --> child_x
-        let min_desc1 = if min_desc[c1] != usize::MAX {
-            min_desc[c1]
-        } else {
-            c1
-        };
-        let min_desc2 = if min_desc[c2] != usize::MAX {
-            min_desc[c2]
-        } else {
-            c2
-        };
 
-        // Collect the minimum descendant and allocate it to min_desc[parent]
-        let desc_min = std::cmp::min(min_desc1, min_desc2);
-        min_desc[p] = desc_min;
+        let parent_c1 = *small_children.get(&c1).unwrap_or(&c1);
+        let parent_c2 = *small_children.get(&c2).unwrap_or(&c2);
+        small_children.insert(p, std::cmp::min(parent_c1, parent_c2));
 
-        // Instead of the parent, we collect the max node
-        let desc_max = std::cmp::max(min_desc1, min_desc2);
-        ancestry[i] = [min_desc1, min_desc2, desc_max];
+        ancestry[i] = [parent_c1, parent_c2, std::cmp::max(parent_c1, parent_c2)];
     }
 }
 
@@ -228,28 +214,63 @@ pub fn order_cherries_no_parents(ancestry: &mut Ancestry) {
     }
 }
 
-pub fn build_vector(cherries: Ancestry) -> Vec<usize> {
+pub fn build_vector(cherries: &Ancestry) -> Vec<usize> {
     let num_cherries = cherries.len();
-    let num_leaves = num_cherries + 1;
-
-    let mut v = vec![0; num_cherries];
-    let mut idxs = vec![0; num_leaves];
+    let mut v_res: Vec<usize> = vec![0; num_cherries];
 
     for i in 0..num_cherries {
         let [c1, c2, c_max] = cherries[i];
 
         let mut idx = 0;
 
-        for j in 1..c_max {
-            idx += idxs[j];
+        for j in 0..i {
+            if cherries[j][2] <= c_max {
+                idx += 1;
+            }
         }
-        // Reminder: v[i] = j --> branch i yields leaf j
-        v[c_max - 1] = if idx == 0 {
+
+        v_res[c_max - 1] = if idx == 0 {
             std::cmp::min(c1, c2)
         } else {
             c_max - 1 + idx
         };
-        idxs[c_max] = 1;
     }
-    return v;
+    return v_res;
 }
+
+// NOTE (Don.S 12/11/2024): This is cpp implementation.. commenting out for now in case we need it later
+// for this implementation, HashMap is not used. Instead, we use a vector to store the minimum descendant.
+//
+// pub fn order_cherries(ancestry: &mut Ancestry) {
+//     let num_cherries = ancestry.len();
+//     let num_nodes = 2 * num_cherries + 2;
+
+//     let mut min_desc = vec![usize::MAX; num_nodes];
+
+//     // Sort by the parent node (ascending order)
+//     ancestry.sort_by_key(|x| x[2]);
+
+//     for i in 0..num_cherries {
+//         let [c1, c2, p] = ancestry[i];
+//         // Get the minimum descendant of c1 and c2 (if they exist)
+//         // min_desc[child_x] doesn't exist, min_desc_x --> child_x
+//         let min_desc1 = if min_desc[c1] != usize::MAX {
+//             min_desc[c1]
+//         } else {
+//             c1
+//         };
+//         let min_desc2 = if min_desc[c2] != usize::MAX {
+//             min_desc[c2]
+//         } else {
+//             c2
+//         };
+
+//         // Collect the minimum descendant and allocate it to min_desc[parent]
+//         let desc_min = std::cmp::min(min_desc1, min_desc2);
+//         min_desc[p] = desc_min;
+
+//         // Instead of the parent, we collect the max node
+//         let desc_max = std::cmp::max(min_desc1, min_desc2);
+//         ancestry[i] = [min_desc1, min_desc2, desc_max];
+//     }
+// }
