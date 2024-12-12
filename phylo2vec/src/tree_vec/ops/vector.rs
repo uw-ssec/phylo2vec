@@ -231,7 +231,7 @@ pub fn order_cherries_no_parents(ancestry: &mut Ancestry) {
 
 pub fn build_vector(cherries: &Ancestry) -> Vec<usize> {
     let num_cherries = cherries.len();
-    let mut v_res: Vec<usize> = vec![0; num_cherries];
+    let mut v: Vec<usize> = vec![0; num_cherries];
 
     for i in 0..num_cherries {
         let [c1, c2, c_max] = cherries[i];
@@ -244,11 +244,11 @@ pub fn build_vector(cherries: &Ancestry) -> Vec<usize> {
             }
         }
 
-        v_res[c_max - 1] = if idx == 0 {
+        v[c_max - 1] = if idx == 0 {
             std::cmp::min(c1, c2)
         } else {
             c_max - 1 + idx
         };
     }
-    return v_res;
+    return v;
 }
