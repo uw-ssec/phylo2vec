@@ -1,7 +1,6 @@
 use crate::tree_vec::ops::avl::AVLTree;
 use crate::tree_vec::types::{Ancestry, Pair, PairsVec};
 use crate::utils::is_unordered;
-use std::collections::HashMap;
 use std::usize;
 
 /// Get the pair of nodes from the Phylo2Vec vector
@@ -231,24 +230,26 @@ pub fn order_cherries_no_parents(ancestry: &mut Ancestry) {
 
 pub fn build_vector(cherries: &Ancestry) -> Vec<usize> {
     let num_cherries = cherries.len();
-    let mut v: Vec<usize> = vec![0; num_cherries];
+    let num_leaves = num_cherries + 1;
+
+    let mut v = vec![0; num_cherries];
+    let mut idxs = vec![0; num_leaves];
 
     for i in 0..num_cherries {
         let [c1, c2, c_max] = cherries[i];
 
         let mut idx = 0;
 
-        for j in 0..i {
-            if cherries[j][2] <= c_max {
-                idx += 1;
-            }
+        for j in 1..c_max {
+            idx += idxs[j];
         }
-
+        // Reminder: v[i] = j --> branch i yields leaf j
         v[c_max - 1] = if idx == 0 {
             std::cmp::min(c1, c2)
         } else {
             c_max - 1 + idx
         };
+        idxs[c_max] = 1;
     }
     return v;
 }
