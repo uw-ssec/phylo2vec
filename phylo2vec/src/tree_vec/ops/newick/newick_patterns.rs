@@ -1,3 +1,19 @@
+/// Represents the regular expressions used to parse Newick trees.
+///
+/// This is essentially a holder for the various regular expressions
+/// used to parse newick trees such as the left node, right node, pairs,
+/// branch lengths, and parents.
+///
+/// # Example
+///
+/// ```
+/// use phylo2vec::tree_vec::ops::newick::NewickPatterns;
+///
+/// let newick_patterns = NewickPatterns::new();
+/// let newick = "(1,2)3";
+/// let result = newick_patterns.pairs.is_match(newick);
+/// assert_eq!(result, true);
+/// ```
 #[derive(Debug)]
 pub struct NewickPatterns {
     pub left_node: regex::Regex,

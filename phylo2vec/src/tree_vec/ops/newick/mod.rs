@@ -88,16 +88,53 @@ fn _build_newick_recursive_inner(p: usize, ancestry: &Ancestry) -> String {
     format!("({},{}){}", left, right, p)
 }
 
+/// Remove parent labels from the Newick string
+///
+/// # Example
+///
+/// ```
+/// use phylo2vec::tree_vec::ops::newick::remove_parent_labels;
+///
+/// let newick = "(((0,(3,5)6)8,2)9,(1,4)7)10;";
+/// let result = remove_parent_labels(newick);
+/// assert_eq!(result, "(((0,(3,5)),2),(1,4));");
+/// ```
 pub fn remove_parent_labels(newick: &str) -> String {
     let newick_patterns = NewickPatterns::new();
     return newick_patterns.parents.replace_all(newick, ")").to_string();
 }
 
+/// Check if the Newick string has parent labels
+///
+/// # Example
+///
+/// ```
+/// use phylo2vec::tree_vec::ops::newick::has_parents;
+///
+/// let newick = "(((0,(3,5)6)8,2)9,(1,4)7)10;";
+/// let result = has_parents(newick);
+/// assert_eq!(result, true);
+///
+/// let newick_no_parents = "(((0,(3,5)),2),(1,4));";
+/// let result_no_parents = has_parents(newick_no_parents);
+/// assert_eq!(result_no_parents, false);
+/// ```
 pub fn has_parents(newick: &str) -> bool {
     let newick_patterns = NewickPatterns::new();
     return newick_patterns.parents.is_match(newick);
 }
 
+/// Find the number of leaves in the Newick string
+///
+/// # Example
+///
+/// ```
+/// use phylo2vec::tree_vec::ops::newick::find_num_leaves;
+///
+/// let newick = "(((0,(3,5)6)8,2)9,(1,4)7)10;";
+/// let result = find_num_leaves(newick);
+/// assert_eq!(result, 6);
+/// ```
 pub fn find_num_leaves(newick: &str) -> usize {
     let newick_patterns = NewickPatterns::new();
     let result: Vec<usize> = newick_patterns
