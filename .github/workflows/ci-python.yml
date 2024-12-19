@@ -50,9 +50,9 @@ jobs:
           set -e
           python3 -m venv .venv
           source .venv/bin/activate
-          pip install phylo2vec --find-links ${{ env.PYTHON_PATH }}/dist --force-reinstall
+          pip install phylo2vec --find-links dist --force-reinstall
           pip install pytest six
-          pytest
+          pytest -vvv ${{ env.PYTHON_PATH }}/tests
       - name: pytest
         if: ${{ !startsWith(matrix.platform.target, 'x86') && matrix.platform.target != 'ppc64' }}
         uses: uraimo/run-on-arch-action@v2
@@ -66,8 +66,8 @@ jobs:
             pip3 install -U pip pytest six
           run: |
             set -e
-            pip3 install phylo2vec --find-links ${{ env.PYTHON_PATH }}/dist --force-reinstall
-            pytest
+            pip3 install phylo2vec --find-links dist --force-reinstall
+            pytest -vvv ${{ env.PYTHON_PATH }}/tests
 
   musllinux:
     runs-on: ${{ matrix.platform.runner }}
@@ -105,9 +105,9 @@ jobs:
             apk add py3-pip py3-virtualenv
             python3 -m virtualenv .venv
             source .venv/bin/activate
-            pip install phylo2vec --no-index --find-links ${{ env.PYTHON_PATH }}/dist --force-reinstall
+            pip install phylo2vec --no-index --find-links dist --force-reinstall
             pip install pytest six
-            pytest
+            pytest -vvv ${{ env.PYTHON_PATH }}/tests
       - name: pytest
         if: ${{ !startsWith(matrix.platform.target, 'x86') }}
         uses: uraimo/run-on-arch-action@v2
@@ -122,8 +122,8 @@ jobs:
             python3 -m virtualenv .venv
             source .venv/bin/activate
             pip install pytest six
-            pip install phylo2vec --find-links ${{ env.PYTHON_PATH }}/dist --force-reinstall
-            pytest
+            pip install phylo2vec --find-links dist --force-reinstall
+            pytest -vvv ${{ env.PYTHON_PATH }}/tests
 
   windows:
     runs-on: ${{ matrix.platform.runner }}
@@ -153,9 +153,9 @@ jobs:
           set -e
           python3 -m venv .venv
           source .venv/Scripts/activate
-          pip install phylo2vec --find-links ${{ env.PYTHON_PATH }}/dist --force-reinstall
+          pip install phylo2vec --find-links dist --force-reinstall
           pip install pytest six
-          pytest
+          pytest -vvv ${{ env.PYTHON_PATH }}/tests
 
   macos:
     runs-on: ${{ matrix.platform.runner }}
@@ -180,6 +180,6 @@ jobs:
           set -e
           python3 -m venv .venv
           source .venv/bin/activate
-          pip install phylo2vec --find-links ${{ env.PYTHON_PATH }}/dist --force-reinstall
+          pip install phylo2vec --find-links dist --force-reinstall
           pip install pytest six
-          pytest
+          pytest -vvv ${{ env.PYTHON_PATH }}/tests
