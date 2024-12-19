@@ -10,6 +10,9 @@ on:
 permissions:
   contents: read
 
+env:
+  MATURIN_MANIFEST_PATH: ./py-phylo2vec/Cargo.toml
+
 jobs:
   linux:
     runs-on: ${{ matrix.platform.runner }}
