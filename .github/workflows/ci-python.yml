@@ -11,7 +11,7 @@ permissions:
   contents: read
 
 env:
-  MATURIN_MANIFEST_PATH: ./py-phylo2vec/Cargo.toml
+  PYTHON_PATH: ./py-phylo2vec
 
 jobs:
   linux:
@@ -40,7 +40,7 @@ jobs:
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.platform.target }}
-          args: --release --out dist
+          args: --release --out dist --manifest-path ${{ env.PYTHON_PATH }}/Cargo.toml
           sccache: 'true'
           manylinux: auto
       - name: pytest
@@ -50,7 +50,7 @@ jobs:
           set -e
           python3 -m venv .venv
           source .venv/bin/activate
-          pip install phylo2vec --find-links dist --force-reinstall
+          pip install phylo2vec --find-links ${{ env.PYTHON_PATH }}/dist --force-reinstall
           pip install pytest
           pytest
       - name: pytest
@@ -66,7 +66,7 @@ jobs:
             pip3 install -U pip pytest
           run: |
             set -e
-            pip3 install phylo2vec --find-links dist --force-reinstall
+            pip3 install phylo2vec --find-links ${{ env.PYTHON_PATH }}/dist --force-reinstall
             pytest
 
   musllinux:
@@ -91,7 +91,7 @@ jobs:
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.platform.target }}
-          args: --release --out dist
+          args: --release --out dist --manifest-path ${{ env.PYTHON_PATH }}/Cargo.toml
           sccache: 'true'
           manylinux: musllinux_1_2
       - name: pytest
@@ -105,7 +105,7 @@ jobs:
             apk add py3-pip py3-virtualenv
             python3 -m virtualenv .venv
             source .venv/bin/activate
-            pip install phylo2vec --no-index --find-links dist --force-reinstall
+            pip install phylo2vec --no-index --find-links ${{ env.PYTHON_PATH }}/dist --force-reinstall
             pip install pytest
             pytest
       - name: pytest
@@ -122,7 +122,7 @@ jobs:
             python3 -m virtualenv .venv
             source .venv/bin/activate
             pip install pytest
-            pip install phylo2vec --find-links dist --force-reinstall
+            pip install phylo2vec --find-links ${{ env.PYTHON_PATH }}/dist --force-reinstall
             pytest
 
   windows:
@@ -144,7 +144,7 @@ jobs:
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.platform.target }}
-          args: --release --out dist
+          args: --release --out dist --manifest-path ${{ env.PYTHON_PATH }}/Cargo.toml
           sccache: 'true'
       - name: pytest
         if: ${{ !startsWith(matrix.platform.target, 'aarch64') }}
@@ -153,7 +153,7 @@ jobs:
           set -e
           python3 -m venv .venv
           source .venv/Scripts/activate
-          pip install phylo2vec --find-links dist --force-reinstall
+          pip install phylo2vec --find-links ${{ env.PYTHON_PATH }}/dist --force-reinstall
           pip install pytest
           pytest
 
@@ -173,13 +173,13 @@ jobs:
         uses: PyO3/maturin-action@v1
         with:
           target: ${{ matrix.platform.target }}
-          args: --release --out dist
+          args: --release --out dist --manifest-path ${{ env.PYTHON_PATH }}/Cargo.toml
           sccache: 'true'
       - name: pytest
         run: |
           set -e
           python3 -m venv .venv
           source .venv/bin/activate
-          pip install phylo2vec --find-links dist --force-reinstall
+          pip install phylo2vec --find-links ${{ env.PYTHON_PATH }}/dist --force-reinstall
           pip install pytest
           pytest
