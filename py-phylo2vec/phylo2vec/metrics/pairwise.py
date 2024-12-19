@@ -5,7 +5,6 @@ from phylo2vec.base.to_newick import _get_ancestry
 from phylo2vec.utils.validation import check_v
 
 
-@nb.njit(cache=True)
 def cophenetic_distances(v, unrooted=False):
     # Should be very similar to dist_nodes in ape
 
