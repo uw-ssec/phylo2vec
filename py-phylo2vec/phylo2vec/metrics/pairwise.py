@@ -1,4 +1,3 @@
-import numba as nb
 import numpy as np
 
 from phylo2vec.base.to_newick import _get_ancestry
