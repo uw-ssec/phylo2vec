@@ -11,6 +11,8 @@ build:
   tools:
     python: "3.11"
   jobs:
+    install:
+      - "pixi install jupyter-book"
     pre_build:
       # Generate the Sphinx configuration for this Jupyter Book so it builds.
       - "jupyter-book config sphinx docs"
@@ -25,8 +27,4 @@ formats: []
 # Optionally set the version of Python and requirements required to build your docs
 python:
   install:
-    - method: pip
-      path: .
-      extra_requirements:
-        - docs
-#   system_packages: true
+    - requirements: docs/requirements.txt
