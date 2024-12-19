@@ -38,7 +38,7 @@ def _get_ancestry(v: np.ndarray) -> np.ndarray:
         2nd column: child 2
         3rd column: parent node
     """
-    ancestry_list = _phylo2vec_core.get_ancestry(v_input)
+    ancestry_list = _phylo2vec_core.get_ancestry(v)
     return np.asarray(ancestry_list)
 
 
