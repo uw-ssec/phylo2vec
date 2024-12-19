@@ -1,6 +1,6 @@
 """Tests for utility functions."""
 
-import random
+import secrets
 
 import numpy as np
 import pytest
@@ -91,7 +91,7 @@ def test_remove_and_add(n_leaves):
     for _ in range(N_REPEATS):
         v = sample(n_leaves)
 
-        leaf = random.randint(0, n_leaves - 1)
+        leaf = secrets.randbelow(n_leaves)
 
         v_sub, sis = remove_leaf(v, leaf)
 
