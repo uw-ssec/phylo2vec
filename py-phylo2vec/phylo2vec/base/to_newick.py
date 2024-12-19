@@ -38,9 +38,8 @@ def _get_ancestry(v: np.ndarray) -> np.ndarray:
         2nd column: child 2
         3rd column: parent node
     """
-    v_input = v.tolist()
-    result = _phylo2vec_core.get_ancestry(v_input)
-    return np.asarray(result)
+    ancestry_list = _phylo2vec_core.get_ancestry(v_input)
+    return np.asarray(ancestry_list)
 
 
 def _build_newick(ancestry: np.ndarray) -> str:
@@ -64,8 +63,7 @@ def _build_newick(ancestry: np.ndarray) -> str:
     newick : str
         Newick string
     """
-    ancestry_input = ancestry.tolist()
-    return _phylo2vec_core.build_newick(ancestry_input)
+    return _phylo2vec_core.build_newick(ancestry)
 
 
 def to_newick(v):
@@ -81,5 +79,4 @@ def to_newick(v):
     newick : str
         Newick tree
     """
-    v_input = v.tolist()
-    return _phylo2vec_core.to_newick(v_input)
+    return _phylo2vec_core.to_newick(v)
