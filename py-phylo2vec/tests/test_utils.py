@@ -7,7 +7,7 @@ import pytest
 
 from ete3 import Tree
 
-from phylo2vec.tests.config import MIN_N_LEAVES, MAX_N_LEAVES, N_REPEATS
+from .config import MIN_N_LEAVES, MAX_N_LEAVES, N_REPEATS
 from phylo2vec.base import to_newick
 from phylo2vec.utils import (
     add_leaf,

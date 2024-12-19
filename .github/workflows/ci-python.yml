@@ -51,7 +51,7 @@ jobs:
           python3 -m venv .venv
           source .venv/bin/activate
           pip install phylo2vec --find-links ${{ env.PYTHON_PATH }}/dist --force-reinstall
-          pip install pytest
+          pip install pytest six
           pytest
       - name: pytest
         if: ${{ !startsWith(matrix.platform.target, 'x86') && matrix.platform.target != 'ppc64' }}
@@ -63,7 +63,7 @@ jobs:
           install: |
             apt-get update
             apt-get install -y --no-install-recommends python3 python3-pip
-            pip3 install -U pip pytest
+            pip3 install -U pip pytest six
           run: |
             set -e
             pip3 install phylo2vec --find-links ${{ env.PYTHON_PATH }}/dist --force-reinstall
@@ -106,7 +106,7 @@ jobs:
             python3 -m virtualenv .venv
             source .venv/bin/activate
             pip install phylo2vec --no-index --find-links ${{ env.PYTHON_PATH }}/dist --force-reinstall
-            pip install pytest
+            pip install pytest six
             pytest
       - name: pytest
         if: ${{ !startsWith(matrix.platform.target, 'x86') }}
@@ -121,7 +121,7 @@ jobs:
             set -e
             python3 -m virtualenv .venv
             source .venv/bin/activate
-            pip install pytest
+            pip install pytest six
             pip install phylo2vec --find-links ${{ env.PYTHON_PATH }}/dist --force-reinstall
             pytest
 
@@ -154,7 +154,7 @@ jobs:
           python3 -m venv .venv
           source .venv/Scripts/activate
           pip install phylo2vec --find-links ${{ env.PYTHON_PATH }}/dist --force-reinstall
-          pip install pytest
+          pip install pytest six
           pytest
 
   macos:
@@ -181,5 +181,5 @@ jobs:
           python3 -m venv .venv
           source .venv/bin/activate
           pip install phylo2vec --find-links ${{ env.PYTHON_PATH }}/dist --force-reinstall
-          pip install pytest
+          pip install pytest six
           pytest
