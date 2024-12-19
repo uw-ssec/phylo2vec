@@ -12,6 +12,7 @@ permissions:
 
 env:
   PIXI_PYTHON_ENV: py-phylo2vec
+  PIXI_COLOR: always
 
 jobs:
   build_and_test:
