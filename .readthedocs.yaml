@@ -15,7 +15,7 @@ build:
       - asdf plugin add pixi
       - asdf install pixi latest
       - asdf global pixi latest
-      - pixi run build-docs
+      - pixi run -e py-phylo2vec build-docs
       - mkdir -p $READTHEDOCS_OUTPUT/html/
       - cp -r docs/_build/html/** $READTHEDOCS_OUTPUT/html/
 
