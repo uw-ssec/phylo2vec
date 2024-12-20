@@ -11,7 +11,8 @@ from phylo2vec.base.to_newick import _get_ancestry, to_newick
 from phylo2vec.base.to_vector import (
     _build_vector,
     _find_cherries,
-    _order_cherries_no_parents
+    _order_cherries_no_parents,
+    to_vector,
 )
 from phylo2vec.utils.validation import check_v
 
