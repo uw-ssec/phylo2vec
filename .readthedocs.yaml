@@ -10,14 +10,13 @@ build:
   os: ubuntu-22.04
   tools:
     python: "3.11"
-  jobs:
-    install:
-      - asdf plugin add pixi
-      - asdf install pixi latest
-      - asdf global pixi latest
-      - pixi run -e py-phylo2vec build-docs
-      - mkdir -p $READTHEDOCS_OUTPUT/html/
-      - cp -r docs/_build/html/** $READTHEDOCS_OUTPUT/html/
+  commands:
+    - asdf plugin add pixi
+    - asdf install pixi latest
+    - asdf global pixi latest
+    - pixi run -e py-phylo2vec build-docs
+    - mkdir -p $READTHEDOCS_OUTPUT/html/
+    - cp -r docs/_build/html/** $READTHEDOCS_OUTPUT/html/
 
 # Optionally build your docs in additional formats such as PDF and ePub
 formats: []
