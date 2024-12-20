@@ -67,6 +67,7 @@ cmd = "maturin develop --manifest-path ./py-phylo2vec/Cargo.toml"
 
 [feature.python.tasks.build-docs]
 cmd = "jupyter-book build docs"
+depends-on = ["install-python"]
 
 [feature.python.tasks.test]
 cmd = "pytest -vvv ./py-phylo2vec/tests"
