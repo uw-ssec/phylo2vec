@@ -107,7 +107,3 @@ depends-on = ["install-python"]
 [feature.r.dependencies]
 r = "4.*"
 r-devtools = ">=2.4.5,<3"
-
-[feature.r.tasks.install-r]
-cmd = 'R -e "rextendr::document()"'
-cwd = "r-phylo2vec"
