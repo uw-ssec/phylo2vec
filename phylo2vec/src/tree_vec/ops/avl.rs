@@ -191,3 +191,99 @@ impl AVLTree {
         self.inorder_traversal()
     }
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use rstest::*;
+
+    #[fixture]
+    fn sample_tree() -> AVLTree {
+        let mut tree = AVLTree::new();
+        tree.insert(0, (1, 1));
+        tree.insert(1, (2, 2));
+        tree.insert(2, (3, 3));
+        tree
+    }
+
+    #[rstest]
+    #[case(Some(Box::new(Node { value: (2, 2), height: 1, size: 1, left: None, right: None })), 1)]
+    #[case(Some(Box::new(Node { value: (2, 2), height: 2, size: 1, left: None, right: None })), 2)]
+    #[case(None, 0)]
+    #[case(sample_tree, 2)]
+    fn test_get_height(#[case] node: Option<Box<Node>>, #[case] expected: usize) {
+        assert_eq!(AVLTree::get_height(&node), expected);
+    }
+
+
+    #[rstest]
+    #[case(0, (1, 1))]
+    #[case(1, (2, 2))]
+    #[case(2, (3, 3))]
+    fn test_lookup(#[case] lookup_index: usize, #[case] expected: Pair) {
+        let tree = sample_tree();
+        assert_eq!(tree.lookup(lookup_index), expected);
+    }
+    
+    #[rstest]
+    #[case(vec![(0, (1, 1))], 0, (1, 1))]
+    #[case(vec![(0, (1, 1)), (1, (2, 2))], 1, (2, 2))]
+    #[case(vec![(0, (1, 1)), (0, (2, 2)), (0, (3, 3))], 0, (3, 3))]
+    #[case(vec![(0, (1, 1)), (0, (2, 2)), (0, (3, 3))], 2, (1, 1))]
+    fn test_insert(#[case] inserts: Vec<(usize, Pair)>, #[case] lookup_index: usize, #[case] expected: Pair) {
+        let mut tree = AVLTree::new();
+        for (index, value) in inserts {
+            tree.insert(index, value);
+        }
+        assert_eq!(tree.lookup(lookup_index), expected); //any way to not use lookup here?
+    }
+
+
+
+    #[rstest]
+    #[case(vec![(0, (1, 1)), (1, (2, 2)), (2, (3, 3))], vec![(1, 1), (2, 2), (3, 3)])]
+    #[case(vec![(0, (3, 3)), (0, (2, 2)), (0, (1, 1))], vec![(1, 1), (2, 2), (3, 3)])]
+    #[case(vec![(0, (2, 2)), (1, (1, 1)), (0, (3, 3))], vec![(1, 1), (2, 2), (3, 3)])]
+    fn test_inorder_traversal(#[case] inserts: Vec<(usize, Pair)>, #[case] expected: Vec<Pair>) {
+        let mut tree = AVLTree::new();
+        for (index, value) in inserts {
+            tree.insert(index, value);
+        }
+        assert_eq!(tree.inorder_traversal(), expected);
+    }
+
+    #[rstest]
+    #[case (vec![(1, 1), (2, 2), (3, 3)])]
+   // #[case(vec![(0, (3, 3)), (0, (2, 2)), (0, (1, 1))], vec![(1, 1), (2, 2), (3, 3)])]
+   // #[case(vec![(0, (2, 2)), (1, (1, 1)), (0, (3, 3))], vec![(1, 1), (2, 2), (3, 3)])]
+    fn test_get_pairs( #[case] expected: Vec<Pair>) {
+        // let mut tree = AVLTree::new();
+        // for (index, value) in inserts {
+        //     tree.insert(index, value);
+        // }
+        assert_eq!(sample_tree().get_pairs(), expected);
+    }
+
+    // #[rstest]
+    // #[case(vec![0, 1, 2, 3, 4, 5])]
+    // #[case(vec![5, 4, 3, 2, 1, 0])]
+    // #[case(vec![3, 1, 4, 0, 2, 5])]
+    // fn test_balance_after_insert(#[case] insert_order: Vec<usize>) {
+    //     let mut tree = AVLTree::new();
+    //     for (i, &index in insert_order.iter().enumerate() {
+    //         tree.insert(index, (i as i16, i as i16));
+    //     }
+    //     // After balancing, the height should be significantly less than the number of nodes
+    //     assert!(AVLTree::get_height(&tree.root) <= 4);
+    // }
+
+    #[rstest]
+    #[case(3, (0, 0))]
+    #[case(10, (0, 0))]
+    #[case(usize::MAX, (0, 0))]
+    fn test_lookup_out_of_bounds(sample_tree: AVLTree, #[case] index: usize, #[case] expected: Pair) {
+        assert_eq!(sample_tree.lookup(index), expected);
+    }
+
+
+}
