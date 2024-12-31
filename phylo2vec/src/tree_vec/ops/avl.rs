@@ -129,11 +129,11 @@ impl AVLTree {
         node.take()
     }
 
-    pub fn insert(&mut self, index: usize, value: Pair) {
-        self.root = Self::insert_by_index(self.root.take(), value, index);
+    pub fn insert_by_index(&mut self, index: usize, value: Pair) {
+        self.root = Self::insert_by_index_helper(self.root.take(), value, index);
     }
 
-    fn insert_by_index(node: Option<Box<Node>>, value: Pair, index: usize) -> Option<Box<Node>> {
+    fn insert_by_index_helper(node: Option<Box<Node>>, value: Pair, index: usize) -> Option<Box<Node>> {
         let mut n: Box<Node> = match node {
             Some(n) => n,
             None => return Some(Box::new(Node::new(value))),
@@ -141,9 +141,9 @@ impl AVLTree {
 
         let left_size = Self::get_size(&n.left);
         if index <= left_size {
-            n.left = Self::insert_by_index(n.left.take(), value, index);
+            n.left = Self::insert_by_index_helper(n.left.take(), value, index);
         } else {
-            n.right = Self::insert_by_index(n.right.take(), value, index - left_size - 1);
+            n.right = Self::insert_by_index_helper(n.right.take(), value, index - left_size - 1);
         }
 
         Self::update_height_and_size(&mut n);
@@ -204,9 +204,9 @@ mod tests {
     #[fixture]
     fn sample_tree() -> AVLTree {
         let mut tree = AVLTree::new();
-        tree.insert(0, (1, 1));
-        tree.insert(1, (2, 2));
-        tree.insert(2, (3, 3));
+        tree.insert_by_index(0, (1, 1));
+        tree.insert_by_index(1, (2, 2));
+        tree.insert_by_index(2, (3, 3));
         tree
     }
 
@@ -227,7 +227,7 @@ mod tests {
     fn test_insert_with_lookup(#[case] inserts: Vec<(usize, Pair)>, #[case] lookup_index: usize, #[case] expected: Pair) {
         let mut tree = AVLTree::new();
         for (index, value) in inserts {
-            tree.insert(index, value);
+            tree.insert_by_index(index, value);
         }
         assert_eq!(tree.lookup(lookup_index), expected); 
     }
@@ -239,7 +239,7 @@ mod tests {
     fn test_inorder_traversal(#[case] inserts: Vec<(usize, Pair)>, #[case] expected: Vec<Pair>) {
         let mut tree = AVLTree::new();
         for (index, value) in inserts {
-            tree.insert(index, value);
+            tree.insert_by_index(index, value);
         }
         assert_eq!(tree.inorder_traversal(), expected);
     }
@@ -251,7 +251,7 @@ mod tests {
     fn test_get_pairs(#[case] inserts: Vec<(usize, Pair)>, #[case] expected: Vec<Pair>) { 
     let mut tree = AVLTree::new();
     for (index, value) in inserts {
-        tree.insert(index, value);
+        tree.insert_by_index(index, value);
     }
         assert_eq!(tree.get_pairs(), expected);
     }
@@ -263,7 +263,7 @@ mod tests {
     fn test_balance_after_insert(#[case] insert_order: Vec<usize>) {
         let mut tree = AVLTree::new();
         for (i, &index) in insert_order.iter().enumerate() {
-            tree.insert(index, (i, i));
+            tree.insert_by_index(index, (i, i));
         }
         // After balancing, the height should be significantly less than the number of nodes
         assert!(AVLTree::get_height(&tree.root) <= 4);
@@ -281,7 +281,6 @@ mod tests {
     //     TODO: This test exposes:
     //      - the fact that all new nodes are created with height and size values hard-coded to 1. Is this the desired behavior, regarding inserts? 
     //      - the fact that the height and size values are not mock-able/isolable - they require a real AVLTree instance to be tested. 
-    //        Basically, this test will only test the fact that update_height does not change increment the height of the node. Is this the desired behavior?
 
 
 }

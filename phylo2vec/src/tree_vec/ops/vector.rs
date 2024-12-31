@@ -67,16 +67,16 @@ pub fn get_pairs_avl(v: &Vec<usize>) -> PairsVec {
     // AVL tree implementation of get_pairs
     let k = v.len();
     let mut avl_tree = AVLTree::new();
-    avl_tree.insert(0, (0, 1));
+    avl_tree.insert_by_index(0, (0, 1));
 
     for i in 1..k {
         let next_leaf = i + 1;
         if v[i] <= i {
-            avl_tree.insert(0, (v[i], next_leaf));
+            avl_tree.insert_by_index(0, (v[i], next_leaf));
         } else {
             let index = v[i] - next_leaf;
             let pair = AVLTree::lookup(&avl_tree, index);
-            avl_tree.insert(index + 1, (pair.0, next_leaf));
+            avl_tree.insert_by_index(index + 1, (pair.0, next_leaf));
         }
     }
 
