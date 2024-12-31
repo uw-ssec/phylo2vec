@@ -206,14 +206,14 @@ mod tests {
         tree
     }
 
-    #[rstest]
-    #[case(Some(Box::new(Node { value: (2, 2), height: 1, size: 1, left: None, right: None })), 1)]
-    #[case(Some(Box::new(Node { value: (2, 2), height: 2, size: 1, left: None, right: None })), 2)]
-    #[case(None, 0)]
-    #[case(sample_tree, 2)]
-    fn test_get_height(#[case] node: Option<Box<Node>>, #[case] expected: usize) {
-        assert_eq!(AVLTree::get_height(&node), expected);
-    }
+    // #[rstest]
+    // #[case(Some(Box::new(Node { value: (2, 2), height: 1, size: 1, left: None, right: None })), 1)]
+    // #[case(Some(Box::new(Node { value: (2, 2), height: 2, size: 1, left: None, right: None })), 2)]
+    // #[case(None, 0)]
+    // #[case(sample_tree().root, 2)]
+    // fn test_get_height(#[case] node: Option<Box<Node>>, #[case] expected: usize) {
+    //     assert_eq!(AVLTree::get_height(&node), expected);
+    // }
 
 
     #[rstest]
@@ -284,6 +284,29 @@ mod tests {
     fn test_lookup_out_of_bounds(sample_tree: AVLTree, #[case] index: usize, #[case] expected: Pair) {
         assert_eq!(sample_tree.lookup(index), expected);
     }
+
+    #[rstest]
+    #[case(Some(Box::new(Node {
+        value: (2, 2),
+        height: 1,
+        size: 1,
+        left: None,
+        right: None,
+    })), 1)]
+    #[case(sample_tree().root, 2)]
+    #[case(None, 0)]
+    fn test_insert2(#[case] mut node: Option<Box<Node>>, #[case] expected: usize) {
+        assert_eq!(AVLTree::get_height(&node), expected);
+
+        //TODO: This test exposes:
+        //  - the fact that all new nodes are created with height and size values hard-coded to 1. Is this the desired behavior, regarding inserts? 
+        //  - the fact that the height and size values are not mock-able/isolable - they require a real AVLTree instance to be tested. 
+        //    Basically, this test will only test the fact that update_height does not change increment the height of the node. Is this the desired behavior?
+    }
+
+    // test update size
+
+    // test insert
 
 
 }
