@@ -239,7 +239,7 @@ mod tests {
     #[rstest]
     #[case(vec![(0, (1, 1)), (1, (2, 2)), (2, (3, 3))], vec![(1, 1), (2, 2), (3, 3)])]
     #[case(vec![(0, (3, 3)), (0, (2, 2)), (0, (1, 1))], vec![(1, 1), (2, 2), (3, 3)])]
-    #[case(vec![(0, (2, 2)), (1, (1, 1)), (0, (3, 3))], vec![(1, 1), (2, 2), (3, 3)])]
+    #[case(vec![(0, (2, 2)), (1, (1, 1)), (0, (3, 3))], vec![(3, 3), (2, 2), (1, 1)])]
     fn test_inorder_traversal(#[case] inserts: Vec<(usize, Pair)>, #[case] expected: Vec<Pair>) {
         let mut tree = AVLTree::new();
         for (index, value) in inserts {
@@ -264,7 +264,7 @@ mod tests {
 
     #[rstest]
     #[case(vec![(0, (1, 1)), (1, (2, 2))], vec![(1, 1), (2, 2)])]
-    #[case(vec![(1, (1, 1)), (0, (2, 2))], vec![(1, 1), (2, 2)])]
+    #[case(vec![(1, (1, 1)), (0, (2, 2))], vec![(2, 2), (1, 1)])]
     fn test_two_elements_insert(#[case] inserts: Vec<(usize, Pair)>, #[case] expected: Vec<Pair>) {
         let mut tree = AVLTree::new();
         for (index, value) in inserts {
@@ -298,7 +298,7 @@ mod tests {
     #[rstest]
     #[case(vec![(0, (1, 1)), (1, (2, 2)), (2, (3, 3))], vec![(1, 1), (2, 2), (3, 3)])]
     #[case(vec![(0, (3, 3)), (0, (2, 2)), (0, (1, 1))], vec![(1, 1), (2, 2), (3, 3)])]
-    #[case(vec![(0, (2, 2)), (1, (1, 1)), (0, (3, 3))], vec![(1, 1), (2, 2), (3, 3)])]
+    #[case(vec![(0, (2, 2)), (1, (1, 1)), (0, (3, 3))], vec![(3, 3), (2, 2), (1, 1)])]
     fn test_get_pairs(#[case] inserts: Vec<(usize, Pair)>, #[case] expected: Vec<Pair>) {
         let mut tree = AVLTree::new();
         for (index, value) in inserts {
