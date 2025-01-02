@@ -3,7 +3,7 @@
 **NOTE: This is currently in active development and APIs will change. Use at
 your own risk.**
 
-This directory contains the pylo2vec R codebase, which includes Rust binding
+This directory contains the phylo2vec R codebase, which includes Rust binding
 setup.
 
 ## Quick install and run
