@@ -218,18 +218,22 @@ mod tests {
         let tree = sample_tree();
         assert_eq!(tree.lookup(lookup_index), expected);
     }
-    
+
     #[rstest]
     #[case(vec![(0, (1, 1))], 0, (1, 1))]
     #[case(vec![(0, (1, 1)), (1, (2, 2))], 1, (2, 2))]
     #[case(vec![(0, (1, 1)), (0, (2, 2)), (0, (3, 3))], 0, (3, 3))]
     #[case(vec![(0, (1, 1)), (0, (2, 2)), (0, (3, 3))], 2, (1, 1))]
-    fn test_insert_with_lookup(#[case] inserts: Vec<(usize, Pair)>, #[case] lookup_index: usize, #[case] expected: Pair) {
+    fn test_insert_with_lookup(
+        #[case] inserts: Vec<(usize, Pair)>,
+        #[case] lookup_index: usize,
+        #[case] expected: Pair,
+    ) {
         let mut tree = AVLTree::new();
         for (index, value) in inserts {
             tree.insert(index, value);
         }
-        assert_eq!(tree.lookup(lookup_index), expected); 
+        assert_eq!(tree.lookup(lookup_index), expected);
     }
 
     #[rstest]
@@ -273,7 +277,11 @@ mod tests {
     #[case(3, (0, 0))]
     #[case(10, (0, 0))]
     #[case(usize::MAX, (0, 0))]
-    fn test_lookup_out_of_bounds(sample_tree: AVLTree, #[case] index: usize, #[case] expected: Pair) {
+    fn test_lookup_out_of_bounds(
+        sample_tree: AVLTree,
+        #[case] index: usize,
+        #[case] expected: Pair,
+    ) {
         assert_eq!(sample_tree.lookup(index), expected);
     }
 
@@ -291,11 +299,11 @@ mod tests {
     #[case(vec![(0, (1, 1)), (1, (2, 2)), (2, (3, 3))], vec![(1, 1), (2, 2), (3, 3)])]
     #[case(vec![(0, (3, 3)), (0, (2, 2)), (0, (1, 1))], vec![(1, 1), (2, 2), (3, 3)])]
     #[case(vec![(0, (2, 2)), (1, (1, 1)), (0, (3, 3))], vec![(1, 1), (2, 2), (3, 3)])]
-    fn test_get_pairs(#[case] inserts: Vec<(usize, Pair)>, #[case] expected: Vec<Pair>) { 
-    let mut tree = AVLTree::new();
-    for (index, value) in inserts {
-        tree.insert(index, value);
-    }
+    fn test_get_pairs(#[case] inserts: Vec<(usize, Pair)>, #[case] expected: Vec<Pair>) {
+        let mut tree = AVLTree::new();
+        for (index, value) in inserts {
+            tree.insert(index, value);
+        }
         assert_eq!(tree.get_pairs(), expected);
     }
 
@@ -316,7 +324,7 @@ mod tests {
     #[case(vec![5, 3, 7, 2, 4, 6, 8])]
     fn test_balance_after_insert_granular(#[case] inserts: Vec<usize>) {
         let mut tree = AVLTree::new();
-        
+
         for &index in inserts.iter() {
             tree.insert(index, (index, index));
         }
@@ -327,14 +335,16 @@ mod tests {
     fn test_balance_helper(node: &Option<Box<Node>>) {
         if let Some(ref n) = node {
             let balance_factor = AVLTree::get_balance_factor(node);
-            assert!(balance_factor >= -1 && balance_factor <= 1, 
-                    "Node with value {:?} is unbalanced! Balance factor: {}", 
-                    n.value, balance_factor);
-            
+            assert!(
+                balance_factor >= -1 && balance_factor <= 1,
+                "Node with value {:?} is unbalanced! Balance factor: {}",
+                n.value,
+                balance_factor
+            );
+
             // Recursively check balance for left and right subtrees
             test_balance_helper(&n.left);
             test_balance_helper(&n.right);
         }
     }
-
 }
