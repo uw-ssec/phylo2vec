@@ -129,11 +129,6 @@ impl AVLTree {
         node.take()
     }
 
-    /// Creates a new node from the Pair value specified, and inserts it into the specified index in the tree.
-    ///
-    /// *note*: The index is used to determine the position of the new node in the tree.
-    /// 
-    ///
     pub fn insert(&mut self, index: usize, value: Pair) {
         self.root = Self::insert_by_index(self.root.take(), value, index);
     }
