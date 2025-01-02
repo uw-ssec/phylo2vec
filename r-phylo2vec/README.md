@@ -6,10 +6,28 @@ your own risk.**
 This directory contains the pylo2vec R codebase, which includes Rust binding
 setup.
 
-Open up `R` command line interactive mode within the pixi environment:
+## Quick install and run
+
+To quickly install the package and run it, simply run the following
+
+```console
+pixi run -e r-phylo2vec install-r
+```
+
+Once the package is installed you can open up the R terminal:
 
 ```console
 pixi run -e r-phylo2vec R --interactive
+```
+
+In the R terminal, you can then import the `phylo2vec` library:
+
+```R
+library(phylo2vec)
+
+# A small demo
+v = sample(10, FALSE)
+to_newick(v)
 ```
 
 ## Development Guide
@@ -24,6 +42,12 @@ necessary functions from `phylo2vec` Rust crate.
 
 **Note: You will need to run the steps below from the root of the repository for
 it to work**
+
+Open up `R` command line interactive mode within the pixi environment:
+
+```console
+pixi run -e r-phylo2vec R --interactive
+```
 
 ### 1. Modify `src/rust/src/lib.rs`
 
