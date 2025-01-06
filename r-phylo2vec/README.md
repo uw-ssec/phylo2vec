@@ -33,10 +33,10 @@ to_newick(v)
 ## Development Guide
 
 The core Rust code for phylo2vec is located in [phylo2vec](../phylo2vec)
-directory. To add additional binding for the Rust code, you can add more define
+directory. To add additional bindings for the Rust code, you can add more define
 these in [`lib.rs`](./src/rust/src/lib.rs).
 
-It uses [extendr](https://github.com/extendr/extendr), a safe and user friendly
+It uses [extendr](https://github.com/extendr/extendr), a safe and user-friendly
 R extension interface using Rust. You should be able to directly import the
 necessary functions from `phylo2vec` Rust crate.
 
