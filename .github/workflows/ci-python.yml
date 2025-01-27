@@ -28,7 +28,7 @@ jobs:
           environments: ${{ matrix.python-environment }}
       - run: pixi run -e ${{ matrix.python-environment }} test
   benchmarks:
-    name: Python Benchmarks
+    name: Python benchmarks
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -36,4 +36,3 @@ jobs:
         with:
           environments: py-phylo2vec
       - run: pixi run -e py-phylo2vec benchmark
-
