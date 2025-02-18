@@ -3,6 +3,7 @@ use pyo3::prelude::*;
 use phylo2vec::tree_vec::ops;
 use phylo2vec::utils;
 
+
 /// This function takes a Python list and converts it to a Rust vector.
 #[pyfunction]
 fn to_newick(input_vector: Vec<usize>) -> PyResult<String> {
@@ -14,6 +15,12 @@ fn to_newick(input_vector: Vec<usize>) -> PyResult<String> {
 fn to_vector(newick: &str) -> Vec<usize> {
     let v = ops::to_vector(&newick);
     v
+}
+
+#[pyfunction]
+fn to_matrix(newick: &str) -> Vec<Vec<f32>> {
+    let m = ops::matrix::to_matrix(&newick);
+    m
 }
 
 #[pyfunction]
@@ -49,6 +56,7 @@ fn _phylo2vec_core(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(get_ancestry, m)?)?;
     m.add_function(wrap_pyfunction!(sample, m)?)?;
     m.add_function(wrap_pyfunction!(check_v, m)?)?;
+    m.add_function(wrap_pyfunction!(to_matrix, m)?)?;
     // Metadata about the package bindings
     m.add("__version__", env!("CARGO_PKG_VERSION"))?;
     Ok(())

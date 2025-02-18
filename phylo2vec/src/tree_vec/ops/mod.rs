@@ -1,6 +1,7 @@
 pub mod avl;
 pub mod newick;
 pub mod vector;
+pub mod matrix;
 
 use crate::tree_vec::types::Ancestry;
 
