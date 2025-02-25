@@ -73,22 +73,29 @@ fn _get_cherries_recursive_inner_with_bls(ancestry: &mut Ancestry, bls: &mut Vec
 
             // The parent node (if present)
             let parent: usize;
+            let blp: f32;
             let new_newick: String;
 
             match has_parents {
+
+          
                 // If the newick string has parents
                 true => {
-                    parent = newick[i + 1..]
+                    let parent_pair = newick[i + 1..]
                         .split(',')
                         .next()
                         .unwrap_or("")
                         .split(')')
                         .next()
                         .unwrap_or("")
-                        .parse::<usize>()
-                        .unwrap();
+                        .to_string();
 
-          
+                    let (parent_str, blp_str) = parent_pair.split_once(':').unwrap();
+                    eprint!("parent_str: {}, blp_str: {}", parent_str, blp_str);
+                    parent = parent_str.parse::<usize>().unwrap();            
+                    blp = blp_str.parse::<f32>().unwrap_or(0.0);
+
+
                     new_newick = format!("{}{}", &newick[..open_idx - 1], &newick[i + 1..]);
                 }
                 // If the newick string does not have parents
@@ -298,6 +305,7 @@ mod tests {
         #[case] expected_ancestry: Vec<[usize; 3]>,
         #[case] expected_bls: Vec<[f32; 2]>,
     ) {
+        assert!(has_parents(newick));
         let (ancestry, bls) = get_cherries_with_bls(newick);
 
         // Verify the ancestry

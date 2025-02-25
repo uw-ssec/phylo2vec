@@ -71,10 +71,15 @@ mod tests {
     // Test for the `to_matrix` function
     // Verifies correct matrix generation from a Newick string.
     #[rstest]
-    #[case("((1:0.5,2:0.6):0.7,(3:0.8,4:0.9):1.0);", vec![
+    #[case("((1:0.5,2:0.6)5:0.7,(3:0.8,4:0.9)6:1.0);", vec![
         vec![1.0, 2.0, 0.5],
         vec![3.0, 4.0, 0.8],
         vec![2.0, 3.0, 0.7],
+    ])]
+    #[case("((2:1.0, 3:4.0)4:2.0, 1:5.0)5:3.0,0:0.6)", vec![
+        vec![0.0, 1.0, 4.0],
+        vec![1.0, 2.0, 5.0],
+        vec![2.0, 3.0, 6.0],
     ])]
     fn test_to_matrix(#[case] newick: String, #[case] expected_matrix: Vec<Vec<f32>>) {
         let matrix = to_matrix(&newick);
@@ -86,7 +91,7 @@ mod tests {
     // Test for the `to_matrix_no_parents` function
     // Verifies correct matrix generation from a Newick string without parent nodes.
     #[rstest]
-    #[case("((1:0.5,2:0.6):0.7,(3:0.8,4:0.9):1.0);", vec![
+    #[case("((1:0.5,2:0.6),(3:0.8,4:0.9));", vec![
         vec![1.0, 2.0, 0.5],
         vec![3.0, 4.0, 0.8],
         vec![2.0, 3.0, 0.7],
