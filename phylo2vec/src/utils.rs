@@ -1,6 +1,6 @@
 use rand::{distributions::Uniform, prelude::Distribution, Rng};
 
-/// Sample a vector with `n_leaves - 1` elements.
+/// Sample a vector with `n_leaves` elements.
 ///
 /// If ordering is True, sample an ordered tree, by default ordering is False
 /// ordering=True: v_i in {0, 1, ..., i} for i in (0, n_leaves-1)
@@ -9,9 +9,9 @@ use rand::{distributions::Uniform, prelude::Distribution, Rng};
 /// # Examples
 ///
 /// ```
-/// use phylo2vec::utils::sample;
-/// let v = sample(10, false);
-/// let v2 = sample(5, true);
+/// use phylo2vec::utils::sample_vector;
+/// let v = sample_vector(10, false);
+/// let v2 = sample_vector(5, true);
 /// ```
 pub fn sample_vector(n_leaves: usize, ordering: bool) -> Vec<usize> {
     let mut v: Vec<usize> = Vec::with_capacity(n_leaves);
@@ -33,6 +33,20 @@ pub fn sample_vector(n_leaves: usize, ordering: bool) -> Vec<usize> {
     v
 }
 
+/// Sample a matrix with `n_leaves` elements.
+///
+/// If ordering is True, sample an ordered tree, by default ordering is False
+/// ordering=True: v_i in {0, 1, ..., i} for i in (0, n_leaves-1)
+/// ordering=False: v_i in {0, 1, ..., 2*i} for i in (0, n_leaves-1)
+///
+/// # Examples
+///
+/// ```
+/// use phylo2vec::utils::sample_matrix;
+/// use phylo2vec::utils::sample_matrix;
+/// let v = sample_matrix(10, false);
+/// let v2 = sample_matrix(5, true);
+/// ```
 pub fn sample_matrix(
     n_leaves: usize,
     ordered: bool,

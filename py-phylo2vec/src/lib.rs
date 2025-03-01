@@ -37,9 +37,15 @@ fn build_newick(input_ancestry: Vec<[usize; 3]>) -> String {
 }
 
 #[pyfunction]
-fn sample(n_leaves: usize, ordered: bool) -> Vec<usize> {
+fn sample_vector(n_leaves: usize, ordered: bool) -> Vec<usize> {
     let v = utils::sample_vector(n_leaves, ordered);
     v
+}
+
+#[pyfunction]
+fn sample_matrix(n_leaves: usize, ordered: bool) -> Vec<Vec<f32>>{
+    let m = utils::sample_matrix(n_leaves, ordered);
+    m
 }
 
 #[pyfunction]
@@ -54,7 +60,8 @@ fn _phylo2vec_core(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(to_vector, m)?)?;
     m.add_function(wrap_pyfunction!(build_newick, m)?)?;
     m.add_function(wrap_pyfunction!(get_ancestry, m)?)?;
-    m.add_function(wrap_pyfunction!(sample, m)?)?;
+    m.add_function(wrap_pyfunction!(sample_vector, m)?)?;
+    m.add_function(wrap_pyfunction!(sample_matrix, m)?)?;
     m.add_function(wrap_pyfunction!(check_v, m)?)?;
     m.add_function(wrap_pyfunction!(to_matrix, m)?)?;
     // Metadata about the package bindings
