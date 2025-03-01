@@ -38,7 +38,7 @@ fn build_newick(input_ancestry: Vec<[usize; 3]>) -> String {
 
 #[pyfunction]
 fn sample(n_leaves: usize, ordered: bool) -> Vec<usize> {
-    let v = utils::sample(n_leaves, ordered);
+    let v = utils::sample_vector(n_leaves, ordered);
     v
 }
 
