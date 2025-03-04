@@ -60,16 +60,30 @@ fn _get_cherries_recursive_inner_with_bls(ancestry: &mut Ancestry, bls: &mut Vec
             let parts: Vec<&str> = newick[open_idx..i]
             .split(',')
             .collect();
-            let (child1_str, bl1_str) = parts[0].split_once(':').unwrap();
-            let (child2_str, bl2_str) = parts[1].split_once(':').unwrap();
+            let part = parts[0];
+            let c1: usize;
+            let c2;
+            let mut bl1 = 0.0;
+            let mut bl2 = 0.0;
 
-            // Parse the children (c1, c2)
-            let c1: usize = child1_str.parse::<usize>().unwrap();
-            let c2 = child2_str.parse::<usize>().unwrap();
+        // have to account for base case in which newick string is just a leaf
+            let (child1_str, bl1_str) = part.split_once(':').unwrap(){
 
-            // Parse the branch lengths (bl1, bl2)
-            let bl1 = bl1_str.parse::<f32>().unwrap_or(0.0);
-            let bl2 = bl2_str.parse::<f32>().unwrap_or(0.0);
+            
+                let (child2_str, bl2_str) = parts[1].split_once(':').unwrap();
+
+                // Parse the children (c1, c2)
+                c1 = child1_str.parse::<usize>().unwrap();
+                c2 = child2_str.parse::<usize>().unwrap();
+
+                // Parse the branch lengths (bl1, bl2)
+                bl1 = bl1_str.parse::<f32>().unwrap_or(0.0);
+                bl2 = bl2_str.parse::<f32>().unwrap_or(0.0);
+           // } 
+            //else {
+            //     c1 = parts[0].parse::<usize>().unwrap();
+            //     c2 = parts[1].parse::<usize>().unwrap();
+            // }
 
             // The parent node (if present)
             let parent: usize;
@@ -89,11 +103,29 @@ fn _get_cherries_recursive_inner_with_bls(ancestry: &mut Ancestry, bls: &mut Vec
                         .next()
                         .unwrap_or("")
                         .to_string();
+
+                    // Attempt to split by ":" to extract the branch length if it exists
+                    if parent_pair.is_empty(){
+                        continue;
+                    }
+                
+                    else{
+
+                    // if let Some((parent_label, branch_length)) = parent_pair.split_once(':') {
+                    //     // If ":" is found, split the string
+                    //     (parent_label, branch_length)
+                    // } else {
+                    //     // If there's no ":" (no branch length), use a default branch length
+                    //     (parent_pair.as_str(), "0.0") // Default branch length is 0.0
+                    // };
                     let (parent_str, blp_str) = parent_pair.split_once(':').unwrap();
                     eprint!("parent_str: {}, blp_str: {}", parent_str, blp_str);
-                    parent = parent_str.parse::<usize>().unwrap();            
+                    parent = match parent_str.parse::<usize>() {
+                        Ok(parent_value) => parent_value, // Successfully parsed the parent node
+                        Err(_) => std::cmp::max(c1, c2), // Fallback value if parsing fails
+                    }; 
                    // blp = blp_str.parse::<f32>().unwrap_or(0.0);
-
+                }
 
                     new_newick = format!("{}{}", &newick[..open_idx - 1], &newick[i + 1..]);
                 }

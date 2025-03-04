@@ -76,10 +76,10 @@ mod tests {
         vec![3.0, 4.0, 0.8],
         vec![2.0, 3.0, 0.7],
     ])]
-    #[case("((2:1.0, 3:4.0)4:2.0, 1:5.0)5:3.0,0:0.6)", vec![
+    #[case("((0:1.0,2:4.0),(1:5.0,3:3.0))", vec![
         vec![0.0, 1.0, 4.0],
-        vec![1.0, 2.0, 5.0],
-        vec![2.0, 3.0, 6.0],
+        vec![0.0, 2.0, 5.0],
+        vec![1.0, 3.0, 6.0],
     ])]
     fn test_to_matrix(#[case] newick: String, #[case] expected_matrix: Vec<Vec<f32>>) {
         let matrix = to_matrix(&newick);

@@ -58,12 +58,12 @@ fn check_v(input_vector: Vec<usize>) {
 fn _phylo2vec_core(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(to_newick, m)?)?;
     m.add_function(wrap_pyfunction!(to_vector, m)?)?;
+    m.add_function(wrap_pyfunction!(to_matrix, m)?)?;
     m.add_function(wrap_pyfunction!(build_newick, m)?)?;
     m.add_function(wrap_pyfunction!(get_ancestry, m)?)?;
     m.add_function(wrap_pyfunction!(sample_vector, m)?)?;
     m.add_function(wrap_pyfunction!(sample_matrix, m)?)?;
     m.add_function(wrap_pyfunction!(check_v, m)?)?;
-    m.add_function(wrap_pyfunction!(to_matrix, m)?)?;
     // Metadata about the package bindings
     m.add("__version__", env!("CARGO_PKG_VERSION"))?;
     Ok(())
