@@ -50,26 +50,27 @@ fn _get_cherries_recursive_inner(ancestry: &mut Ancestry, newick: &str, has_pare
     }
 }
 
-fn _get_cherries_recursive_inner_with_bls(ancestry: &mut Ancestry, bls: &mut Vec<[f32; 2]>, newick: &str, newick_has_parents: bool) {
+fn _get_cherries_recursive_inner_with_bls(
+    ancestry: &mut Ancestry,
+    bls: &mut Vec<[f32; 2]>,
+    newick: &str,
+    newick_has_parents: bool,
+) {
     let mut open_idx: usize = 0;
 
     for (i, ch) in newick.chars().enumerate() {
         if ch == '(' {
             open_idx = i + 1;
         } else if ch == ')' {
-            let parts: Vec<&str> = newick[open_idx..i]
-            .split(',')
-            .collect();
+            let parts: Vec<&str> = newick[open_idx..i].split(',').collect();
             let part = parts[0];
             let c1: usize;
             let c2;
             let mut bl1 = 0.0;
             let mut bl2 = 0.0;
-
-        // have to account for base case in which newick string is just a leaf
-            let (child1_str, bl1_str) = part.split_once(':').unwrap(){
-
-            
+            if part.contains(':') {
+                // have to account for base case in which newick string is just a leaf
+                let (child1_str, bl1_str) = part.split_once(':').unwrap();
                 let (child2_str, bl2_str) = parts[1].split_once(':').unwrap();
 
                 // Parse the children (c1, c2)
@@ -79,20 +80,17 @@ fn _get_cherries_recursive_inner_with_bls(ancestry: &mut Ancestry, bls: &mut Vec
                 // Parse the branch lengths (bl1, bl2)
                 bl1 = bl1_str.parse::<f32>().unwrap_or(0.0);
                 bl2 = bl2_str.parse::<f32>().unwrap_or(0.0);
-           // } 
-            //else {
-            //     c1 = parts[0].parse::<usize>().unwrap();
-            //     c2 = parts[1].parse::<usize>().unwrap();
-            // }
+            } else {
+                c1 = parts[0].parse::<usize>().unwrap();
+                c2 = parts[1].parse::<usize>().unwrap();
+            }
 
             // The parent node (if present)
             let parent: usize;
-            let blp: f32;
+            // let _blp: f32;
             let new_newick: String;
 
             match newick_has_parents {
-
-          
                 // If the newick string has parents
                 true => {
                     let parent_pair = newick[i + 1..]
@@ -105,27 +103,17 @@ fn _get_cherries_recursive_inner_with_bls(ancestry: &mut Ancestry, bls: &mut Vec
                         .to_string();
 
                     // Attempt to split by ":" to extract the branch length if it exists
-                    if parent_pair.is_empty(){
+                    if parent_pair.is_empty() {
                         continue;
+                    } else {
+                        let (parent_str, blp_str) = parent_pair.split_once(':').unwrap();
+                        eprint!("parent_str: {}, blp_str: {}", parent_str, blp_str);
+                        parent = match parent_str.parse::<usize>() {
+                            Ok(parent_value) => parent_value, // Successfully parsed the parent node
+                            Err(_) => std::cmp::max(c1, c2),  // Fallback value if parsing fails
+                        };
+                        // blp = blp_str.parse::<f32>().unwrap_or(0.0);
                     }
-                
-                    else{
-
-                    // if let Some((parent_label, branch_length)) = parent_pair.split_once(':') {
-                    //     // If ":" is found, split the string
-                    //     (parent_label, branch_length)
-                    // } else {
-                    //     // If there's no ":" (no branch length), use a default branch length
-                    //     (parent_pair.as_str(), "0.0") // Default branch length is 0.0
-                    // };
-                    let (parent_str, blp_str) = parent_pair.split_once(':').unwrap();
-                    eprint!("parent_str: {}, blp_str: {}", parent_str, blp_str);
-                    parent = match parent_str.parse::<usize>() {
-                        Ok(parent_value) => parent_value, // Successfully parsed the parent node
-                        Err(_) => std::cmp::max(c1, c2), // Fallback value if parsing fails
-                    }; 
-                   // blp = blp_str.parse::<f32>().unwrap_or(0.0);
-                }
 
                     new_newick = format!("{}{}", &newick[..open_idx - 1], &newick[i + 1..]);
                 }
@@ -133,13 +121,14 @@ fn _get_cherries_recursive_inner_with_bls(ancestry: &mut Ancestry, bls: &mut Vec
                 false => {
                     parent = std::cmp::max(c1, c2);
                     if parent == c1 {
-                        blp = bl1;
+                        //  _blp = bl1;
                     } else {
-                        blp = bl2;
+                        // _blp = bl2;
                     }
                     new_newick = newick.replace(
                         &newick[open_idx - 1..i + 1],
                         &std::cmp::min(c1, c2).to_string(),
+                        // replace the branch length?
                     );
                 }
             }
@@ -151,7 +140,12 @@ fn _get_cherries_recursive_inner_with_bls(ancestry: &mut Ancestry, bls: &mut Vec
             bls.push([bl1, bl2]);
 
             // Recursively process the next part of the newick string
-            return _get_cherries_recursive_inner_with_bls(ancestry, bls, &new_newick, newick_has_parents);
+            return _get_cherries_recursive_inner_with_bls(
+                ancestry,
+                bls,
+                &new_newick,
+                newick_has_parents,
+            );
         }
     }
 }
@@ -171,7 +165,12 @@ pub fn get_cherries_with_bls(newick: &str) -> (Ancestry, Vec<[f32; 2]>) {
     }
     let mut ancestry: Ancestry = Vec::new();
     let mut bls: Vec<[f32; 2]> = Vec::new();
-    _get_cherries_recursive_inner_with_bls(&mut ancestry,&mut bls,&newick[..newick.len() - 1], true);
+    _get_cherries_recursive_inner_with_bls(
+        &mut ancestry,
+        &mut bls,
+        &newick[..newick.len() - 1],
+        true,
+    );
     (ancestry, bls)
 }
 
@@ -190,7 +189,12 @@ pub fn get_cherries_no_parents_with_bls(newick: &str) -> (Ancestry, Vec<[f32; 2]
     }
     let mut ancestry: Ancestry = Vec::new();
     let mut bls: Vec<[f32; 2]> = Vec::new();
-    _get_cherries_recursive_inner_with_bls(&mut ancestry, &mut bls, &newick[..newick.len() - 1], false);
+    _get_cherries_recursive_inner_with_bls(
+        &mut ancestry,
+        &mut bls,
+        &newick[..newick.len() - 1],
+        false,
+    );
     (ancestry, bls)
 }
 
@@ -342,17 +346,17 @@ mod tests {
     ) {
         let ancestry: Ancestry;
         let bls: Vec<[f32; 2]>;
-        if has_parents(newick){
+        if has_parents(newick) {
             (ancestry, bls) = get_cherries_with_bls(newick);
-        }else {
+        } else {
             (ancestry, bls) = get_cherries_no_parents_with_bls(newick);
         }
-       
+
         // Verify the ancestry
-        assert_eq!(ancestry, expected_ancestry);  // Ensure ancestry matches the expected
+        assert_eq!(ancestry, expected_ancestry); // Ensure ancestry matches the expected
 
         // Verify the branch lengths
-       assert_eq!(bls.len(), expected_bls.len()); // Ensure the number of branch lengths is correct
-       assert_eq!(bls, expected_bls); // Ensure branch lengths match the expected
+        assert_eq!(bls.len(), expected_bls.len()); // Ensure the number of branch lengths is correct
+        assert_eq!(bls, expected_bls); // Ensure branch lengths match the expected
     }
 }
