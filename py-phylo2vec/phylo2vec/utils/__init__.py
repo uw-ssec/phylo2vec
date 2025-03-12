@@ -18,6 +18,14 @@ from .vector import (
     reorder_v,
     reroot_at_random,
 )
+from .io import (
+    read_csv,
+    write_csv,
+    read_newick,
+    write_newick,
+    read_newick_labeled,
+    write_newick_labeled,
+)
 
 
 __all__ = [
@@ -34,4 +42,10 @@ __all__ = [
     "reroot_at_random",
     "sample",
     "seed_everything",
+    "read_csv",
+    "write_csv",
+    "read_newick",
+    "write_newick",
+    "read_newick_labelled",
+    "write_newick_labelled",
 ]
