@@ -69,10 +69,10 @@ def test_read_write_newick_labeled(tmp_path, n_leaves):
     """
     t = Tree()
     t.populate(n_leaves)
-    # Random string Newick
+    # Random Newick string
     newick_labeled = t.write(format=9)
     newick_int, label_mapping = create_label_mapping(newick_labeled)
-    write_newick_labeled(newick_int, tmp_path / "test_labeled.newick", label_mapping)
+    write_newick_labeled(newick_int, label_mapping, tmp_path / "test_labeled.newick")
     newick_read, label_mapping_read = read_newick_labeled(
         tmp_path / "test_labeled.newick"
     )

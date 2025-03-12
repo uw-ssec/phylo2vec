@@ -42,3 +42,16 @@ Utils
     utils.remove_leaf
     utils.add_leaf
     utils.get_common_ancestor
+
+Utils - IO
+----------------
+.. autosummary::
+    :nosignatures:
+    :toctree: generated/
+
+    utils.read_newick
+    utils.write_newick
+    utils.read_csv
+    utils.write_csv
+    utils.read_newick_labeled
+    utils.write_newick_labeled

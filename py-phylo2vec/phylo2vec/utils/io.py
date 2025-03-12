@@ -1,11 +1,11 @@
 """
-IO module for phylo2vec package. Convenience functions to read/write newick trees and phylo2vec vectors.
+IO module for phylo2vec package. Convenience functions to read/write Newick trees and phylo2vec vectors.
 """
 
-import phylo2vec
 import numpy as np
-import phylo2vec.base
-import phylo2vec.utils
+
+import phylo2vec
+
 
 def read_csv(path: str) -> np.ndarray:
     """
@@ -23,14 +23,15 @@ def read_csv(path: str) -> np.ndarray:
     """
     return np.loadtxt(path, delimiter=",")
 
-def write_csv(data: np.ndarray, path: str) -> None:
-    """"
+
+def write_csv(v: np.ndarray, path: str) -> None:
+    """
     Write a CSV file containing a phylo2vec vector.
 
     Parameters
     ----------
-    data : np.ndarray
-        The data to write.
+    v : np.ndarray
+        The phylo2vec vector to write.
     path : str
         Path to the CSV file.
 
@@ -38,7 +39,8 @@ def write_csv(data: np.ndarray, path: str) -> None:
     -------
     None
     """
-    np.savetxt(path, data, delimiter=",")
+    np.savetxt(path, v, delimiter=",")
+
 
 def read_newick(path: str) -> str:
     """
@@ -49,7 +51,7 @@ def read_newick(path: str) -> str:
     Parameters
     ----------
     path : str
-        Path to the Newick file.
+        Path to the text file.
 
     Returns
     -------
@@ -59,37 +61,69 @@ def read_newick(path: str) -> str:
     with open(path, "r") as f:
         return f.read()
 
-# TODO: add docstring
+
 def read_newick_labeled(path: str) -> tuple[str, dict]:
+    """
+    Read a Newick string with string labels from a file.
+
+    Converts the string labels to integers so that the Newick string can be converted to a phylo2vec vector.
+    Uses `phylo2vec.utils.create_label_mapping` to create a mapping of the string labels to integers.
+    E.g. "((A,B),(D,E));" --> ("((0,1),(2,3));", {"A": "0", "B": "1", "D": "2", "E": "3"})
+
+    Parameters
+    ----------
+    path : str
+        Path to the text file.
+
+    Returns
+    -------
+    tuple[str, dict]
+        The data in the Newick file and the labels: (newick_int, labels)
+
+    """
     data = read_newick(path)
-    try:
-        newick_int, labels = phylo2vec.utils.create_label_mapping(data)
-    except ValueError as e:
-        print(e)
-        print("Integer based newick found in file. Use read_newick() instead.")
+    newick_int, labels = phylo2vec.utils.create_label_mapping(data)
     return newick_int, labels
 
 
-
-def write_newick(data: str, path: str) -> None:
+def write_newick(newick: str, path: str) -> None:
     """
     Write a Newick string to a file.
 
     Parameters
     ----------
-    data : str
-        The data to write.
+    newick : str
+        The Newick string to write.
     path : str
-        Path to the Newick file.
+        Path to the text file.
 
     Returns
     -------
     None
     """
     with open(path, "w") as f:
-        f.write(data)
+        f.write(newick)
 
-# TODO: add docstring
-def write_newick_labeled(data: str, path: str, labels: dict) -> None:
-    labeled_newick = phylo2vec.utils.apply_label_mapping(data, labels)
+
+def write_newick_labeled(newick: str, labels: dict, path: str) -> None:
+    """
+    Write a Newick string with string labels to a file.
+
+    Converts the integer labels back to string labels using the provided mapping.
+    E.g. ("((0,1),(2,3));", {"A": "0", "B": "1", "D": "2", "E": "3"}) --> "((A,B),(D,E));"
+
+    Parameters
+    ----------
+    newick : str
+        The labeled Newick string to write.
+    labels : dict
+        Mapping of leaf labels (integers converted to string) to taxa.
+    path : str
+        Path to the text file.
+
+    Returns
+    -------
+    None
+    """
+    labeled_newick = phylo2vec.utils.apply_label_mapping(newick, labels)
     write_newick(labeled_newick, path)
