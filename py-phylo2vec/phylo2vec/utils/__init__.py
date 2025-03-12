@@ -46,6 +46,6 @@ __all__ = [
     "write_csv",
     "read_newick",
     "write_newick",
-    "read_newick_labelled",
-    "write_newick_labelled",
+    "read_newick_labeled",
+    "write_newick_labeled",
 ]
