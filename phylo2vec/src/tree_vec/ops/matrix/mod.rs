@@ -1,25 +1,26 @@
+use crate::tree_vec::ops::newick::{get_cherries_no_parents_with_bls, get_cherries_with_bls};
+use crate::tree_vec::ops::vector::{build_vector, order_cherries, order_cherries_no_parents};
 use crate::tree_vec::types::Ancestry;
-use crate::tree_vec::ops::newick::{get_cherries_with_bls, get_cherries_no_parents_with_bls};
-use crate::tree_vec::ops::vector::{build_vector, order_cherries,order_cherries_no_parents };
 
 pub fn to_matrix(newick: &str) -> Vec<Vec<f32>> {
     // Get the ancestry and branch lengths
     let (mut ancestry, bls) = get_cherries_with_bls(newick);
     let indices = _get_sorted_indices(&ancestry);
 
-    order_cherries(&mut ancestry);  // Order the cherries in the ancestry matrix based on parent values
-    let vector = build_vector(&ancestry);  // Build the ordered  vector
+    order_cherries(&mut ancestry); // Order the cherries in the ancestry matrix based on parent values
+    let vector = build_vector(&ancestry); // Build the ordered  vector
 
-    let reordered_bls: Vec<[f32; 2]> = indices.iter()
-        .map(|&idx| bls[idx])  // Access each element of `bls` using the index from `indices`
+    let reordered_bls: Vec<[f32; 2]> = indices
+        .iter()
+        .map(|&idx| bls[idx]) // Access each element of `bls` using the index from `indices`
         .collect();
 
     // Combine the vector with the branch lengths into a matrix
     let mut matrix: Vec<Vec<f32>> = Vec::new();
-    
+
     for i in 0..vector.len() {
-        let row = vec![vector[i] as f32, reordered_bls[i][0], reordered_bls[i][1]]; 
-        matrix.push(row); 
+        let row = vec![vector[i] as f32, reordered_bls[i][0], reordered_bls[i][1]];
+        matrix.push(row);
     }
 
     matrix // Return the matrix
@@ -27,28 +28,29 @@ pub fn to_matrix(newick: &str) -> Vec<Vec<f32>> {
 
 // Matrix construction for the "no parents" case
 pub fn to_matrix_no_parents(newick: &str) -> Vec<Vec<f32>> {
-    let (mut ancestry, mut bls) = get_cherries_no_parents_with_bls(newick);  // Using the `get_cherries_no_parents` function directly
+    let (mut ancestry, bls) = get_cherries_no_parents_with_bls(newick); // Using the `get_cherries_no_parents` function directly
     let indices = _get_sorted_indices(&ancestry);
     order_cherries_no_parents(&mut ancestry);
 
     // Extract branch lengths from the Newick string or ensure they are included in get_cherries
-    let reordered_bls: Vec<[f32; 2]> = indices.iter()
-        .map(|&idx| bls[idx])  // Access each element of `bls` using the index from `indices`
-        .collect();    
-    let vector = build_vector(&ancestry);  
+    let reordered_bls: Vec<[f32; 2]> = indices
+        .iter()
+        .map(|&idx| bls[idx]) // Access each element of `bls` using the index from `indices`
+        .collect();
+    let vector = build_vector(&ancestry);
 
     let mut matrix: Vec<Vec<f32>> = Vec::new();
-    
+
     for i in 0..vector.len() {
-        let row = vec![vector[i] as f32, reordered_bls[i][0], reordered_bls[i][1]]; 
-        matrix.push(row); 
+        let row = vec![vector[i] as f32, reordered_bls[i][0], reordered_bls[i][1]];
+        matrix.push(row);
     }
 
     matrix // Return the matrix
 }
 
-// Helper function that takes an ancestry array, and returns an array of indices, 
-//sorted by the parent values in the ancestry array. 
+// Helper function that takes an ancestry array, and returns an array of indices,
+//sorted by the parent values in the ancestry array.
 fn _get_sorted_indices(ancestry: &Ancestry) -> Vec<usize> {
     // let mut indices = (0..ancestry.len()).collect::<Vec<usize>>();
     // indices.sort_by(|&a, &b| ancestry[a][2].cmp(&ancestry[b][2]));
@@ -61,7 +63,6 @@ fn _get_sorted_indices(ancestry: &Ancestry) -> Vec<usize> {
     indices.sort_by_key(|&i| ancestry[i][2]);
     indices
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -78,8 +79,8 @@ mod tests {
         vec![0.0, 0.1, 0.2],
     ])]
     #[case("(((0:0.9,2:0.4)4:0.8,3:3.0)5:0.4,1:0.5)6:0.2", vec![
-        vec![0.0, 0.9, 0.4], 
-        vec![0.0, 0.8, 3.0], 
+        vec![0.0, 0.9, 0.4],
+        vec![0.0, 0.8, 3.0],
         vec![3.0, 0.4, 0.5],
     ])]
     #[case("(0:0.7,(1:0.5,2:0.8)3:0.6)4:0.9", vec![
@@ -88,7 +89,7 @@ mod tests {
     ])]
     fn test_to_matrix(#[case] newick: String, #[case] expected_matrix: Vec<Vec<f32>>) {
         let matrix = to_matrix(&newick);
-        
+
         // Check if the matrix matches the expected matrix
         assert_eq!(matrix, expected_matrix);
     }
@@ -104,9 +105,12 @@ mod tests {
         vec![0.0, 0.1, 0.2],
         vec![1.0, 0.5, 0.7],
     ])]
-    fn test_to_matrix_no_parents(#[case] newick_no_parents: String, #[case] expected_matrix: Vec<Vec<f32>>) {
+    fn test_to_matrix_no_parents(
+        #[case] newick_no_parents: String,
+        #[case] expected_matrix: Vec<Vec<f32>>,
+    ) {
         let matrix = to_matrix_no_parents(&newick_no_parents);
-        
+
         // Check if the matrix matches the expected matrix
         assert_eq!(matrix, expected_matrix);
     }
@@ -117,7 +121,7 @@ mod tests {
     #[case("".to_string(), vec![])]
     fn test_empty_newick_to_matrix(#[case] newick: String, #[case] expected_matrix: Vec<Vec<f32>>) {
         let matrix = to_matrix(&newick);
-        
+
         // Empty Newick should result in an empty matrix
         assert_eq!(matrix, expected_matrix);
     }
@@ -126,12 +130,13 @@ mod tests {
     // Ensures that an empty Newick string results in an empty matrix when no parents are considered.
     #[rstest]
     #[case("".to_string(), vec![])]
-    fn test_empty_newick_to_matrix_no_parents(#[case] newick_no_parents: String, #[case] expected_matrix: Vec<Vec<f32>>) {
+    fn test_empty_newick_to_matrix_no_parents(
+        #[case] newick_no_parents: String,
+        #[case] expected_matrix: Vec<Vec<f32>>,
+    ) {
         let matrix = to_matrix_no_parents(&newick_no_parents);
-        
+
         // Empty Newick should result in an empty matrix
         assert_eq!(matrix, expected_matrix);
     }
 }
-
-

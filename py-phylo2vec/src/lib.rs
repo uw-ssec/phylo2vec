@@ -3,7 +3,6 @@ use pyo3::prelude::*;
 use phylo2vec::tree_vec::ops;
 use phylo2vec::utils;
 
-
 /// This function takes a Python list and converts it to a Rust vector.
 #[pyfunction]
 fn to_newick(input_vector: Vec<usize>) -> PyResult<String> {
@@ -49,7 +48,7 @@ fn cophenetic_distances(input_vector: Vec<usize>, unrooted: bool) -> Vec<Vec<usi
 }
 
 #[pyfunction]
-fn sample_matrix(n_leaves: usize, ordered: bool) -> Vec<Vec<f32>>{
+fn sample_matrix(n_leaves: usize, ordered: bool) -> Vec<Vec<f32>> {
     let m = utils::sample_matrix(n_leaves, ordered);
     m
 }
