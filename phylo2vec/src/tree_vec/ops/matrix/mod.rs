@@ -2,6 +2,27 @@ use crate::tree_vec::ops::newick::{get_cherries_no_parents_with_bls, get_cherrie
 use crate::tree_vec::ops::vector::{build_vector, order_cherries, order_cherries_no_parents};
 use crate::tree_vec::types::Ancestry;
 
+/// Converts a Newick string to a matrix representation.
+///
+/// # Arguments
+///
+/// * `newick` - A string representing a phylogenetic tree in Newick format.
+///
+/// # Returns
+///
+/// A `Vec<Vec<f32>>` where each row contains the tree's vector representation value and associated branch lengths.
+///
+/// # Example
+///
+/// ```
+/// use phylo2vec::tree_vec::ops::matrix::to_matrix;
+/// let newick = "(0:0.1,1:0.2):0.3;";
+/// let matrix = to_matrix(newick);
+/// ```
+///
+/// # Notes
+///
+/// Assumes a valid Newick string. Relies on helper functions for processing.
 pub fn to_matrix(newick: &str) -> Vec<Vec<f32>> {
     // Get the ancestry and branch lengths
     let (mut ancestry, bls) = get_cherries_with_bls(newick);
@@ -23,7 +44,7 @@ pub fn to_matrix(newick: &str) -> Vec<Vec<f32>> {
         matrix.push(row);
     }
 
-    matrix // Return the matrix
+    matrix
 }
 
 // Matrix construction for the "no parents" case
@@ -46,14 +67,12 @@ pub fn to_matrix_no_parents(newick: &str) -> Vec<Vec<f32>> {
         matrix.push(row);
     }
 
-    matrix // Return the matrix
+    matrix
 }
 
 // Helper function that takes an ancestry array, and returns an array of indices,
 //sorted by the parent values in the ancestry array.
 fn _get_sorted_indices(ancestry: &Ancestry) -> Vec<usize> {
-    // let mut indices = (0..ancestry.len()).collect::<Vec<usize>>();
-    // indices.sort_by(|&a, &b| ancestry[a][2].cmp(&ancestry[b][2]));
     let num_cherries = ancestry.len();
 
     // Create a vector of indices from 0 to num_cherries - 1

@@ -166,9 +166,9 @@ mod tests {
     }
 
     #[rstest]
-    #[case(50, true, 1)]
-    #[case(50, false, 2)]
-    fn test_sample_matrix(#[case] n_leaves: usize, #[case] ordering: bool, #[case] scale: usize) {
+    #[case(50, true)]
+    #[case(50, false)]
+    fn test_sample_matrix(#[case] n_leaves: usize, #[case] ordering: bool) {
         // Assuming sample_matrix generates a matrix
         let matrix = sample_matrix(n_leaves, ordering);
 
