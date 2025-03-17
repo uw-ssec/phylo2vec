@@ -90,47 +90,36 @@ fn _get_cherries_recursive_inner_with_bls(
             // let _blp: f32;
             let new_newick: String;
 
-            match newick_has_parents {
-                // If the newick string has parents
-                true => {
-                    let parent_pair = newick[i + 1..]
-                        .split(',')
-                        .next()
-                        .unwrap_or("")
-                        .split(')')
-                        .next()
-                        .unwrap_or("")
-                        .to_string();
+            if newick_has_parents {
+                let parent_pair = newick[i + 1..]
+                    .split(',')
+                    .next()
+                    .unwrap_or("")
+                    .split(')')
+                    .next()
+                    .unwrap_or("")
+                    .to_string();
 
-                    // Attempt to split by ":" to extract the branch length if it exists
-                    if parent_pair.is_empty() {
-                        continue;
-                    } else {
-                        let (parent_str, blp_str) = parent_pair.split_once(':').unwrap();
-                        eprint!("parent_str: {}, blp_str: {}", parent_str, blp_str);
-                        parent = match parent_str.parse::<usize>() {
-                            Ok(parent_value) => parent_value, // Successfully parsed the parent node
-                            Err(_) => std::cmp::max(c1, c2),  // Fallback value if parsing fails
-                        };
-                        // blp = blp_str.parse::<f32>().unwrap_or(0.0);
-                    }
-
-                    new_newick = format!("{}{}", &newick[..open_idx - 1], &newick[i + 1..]);
+                // Attempt to split by ":" to extract the branch length if it exists
+                if parent_pair.is_empty() {
+                    continue;
+                } else {
+                    let (parent_str, blp_str) = parent_pair.split_once(':').unwrap();
+                    eprint!("parent_str: {}, blp_str: {}", parent_str, blp_str);
+                    parent = match parent_str.parse::<usize>() {
+                        Ok(parent_value) => parent_value, // Successfully parsed the parent node
+                        Err(_) => std::cmp::max(c1, c2),  // Fallback value if parsing fails
+                    };
                 }
-                // If the newick string does not have parents
-                false => {
-                    parent = std::cmp::max(c1, c2);
-                    if parent == c1 {
-                        //  _blp = bl1;
-                    } else {
-                        // _blp = bl2;
-                    }
-                    new_newick = newick.replace(
-                        &newick[open_idx - 1..i + 1],
-                        &std::cmp::min(c1, c2).to_string(),
-                        // replace the branch length?
-                    );
-                }
+                new_newick = format!("{}{}", &newick[..open_idx - 1], &newick[i + 1..]);
+            }
+            // If the newick string does not have parents
+            else {
+                parent = std::cmp::max(c1, c2);
+                new_newick = newick.replace(
+                    &newick[open_idx - 1..=i],
+                    &std::cmp::min(c1, c2).to_string(),
+                );
             }
 
             // Append to ancestry (nodes)
