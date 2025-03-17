@@ -43,7 +43,6 @@ pub fn sample_vector(n_leaves: usize, ordering: bool) -> Vec<usize> {
 ///
 /// ```
 /// use phylo2vec::utils::sample_matrix;
-/// use phylo2vec::utils::sample_matrix;
 /// let v = sample_matrix(10, false);
 /// let v2 = sample_matrix(5, true);
 /// ```
