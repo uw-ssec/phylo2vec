@@ -43,6 +43,12 @@ fn sample_vector(n_leaves: usize, ordered: bool) -> Vec<usize> {
 }
 
 #[pyfunction]
+fn cophenetic_distances(input_vector: Vec<usize>, unrooted: bool) -> Vec<Vec<usize>> {
+    let distances = ops::vector::cophenetic_distances(&input_vector, unrooted);
+    distances
+}
+
+#[pyfunction]
 fn sample_matrix(n_leaves: usize, ordered: bool) -> Vec<Vec<f32>>{
     let m = utils::sample_matrix(n_leaves, ordered);
     m
@@ -63,6 +69,7 @@ fn _phylo2vec_core(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(get_ancestry, m)?)?;
     m.add_function(wrap_pyfunction!(sample_vector, m)?)?;
     m.add_function(wrap_pyfunction!(sample_matrix, m)?)?;
+    m.add_function(wrap_pyfunction!(cophenetic_distances, m)?)?;
     m.add_function(wrap_pyfunction!(check_v, m)?)?;
     // Metadata about the package bindings
     m.add("__version__", env!("CARGO_PKG_VERSION"))?;
