@@ -2,8 +2,8 @@ pub mod avl;
 pub mod newick;
 pub mod vector;
 
-use crate::tree_vec::types::Ancestry;
 use super::TreeVec;
+use crate::tree_vec::types::Ancestry;
 
 pub use vector::{
     build_vector, find_coords_of_first_leaf, get_ancestry, get_pairs, get_pairs_avl,
