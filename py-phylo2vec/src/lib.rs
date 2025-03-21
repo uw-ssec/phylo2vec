@@ -41,12 +41,12 @@ fn check_v(input_vector: Vec<usize>) {
 }
 
 #[pyfunction]
-fn add_leaf(mut input_vector: Vec<usize>, leaf:usize, branch:usize) -> Vec<usize> {
+fn add_leaf(mut input_vector: Vec<usize>, leaf: usize, branch: usize) -> Vec<usize> {
     return ops::add_leaf(&mut input_vector, leaf, branch);
 }
 
 #[pyfunction]
-fn remove_leaf(mut input_vector: Vec<usize>, leaf:usize) -> (Vec<usize>, usize) {
+fn remove_leaf(mut input_vector: Vec<usize>, leaf: usize) -> (Vec<usize>, usize) {
     return ops::remove_leaf(&mut input_vector, leaf);
 }
 
