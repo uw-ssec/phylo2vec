@@ -41,7 +41,7 @@ pub fn to_vector(newick: &str) -> Vec<usize> {
 ///
 /// # Result
 /// Modifies the tree structure by adding the new leaf and updating indices
-pub fn add_leaf(v: &mut Vec<usize>, leaf: usize, branch: usize) ->  Vec<usize> {
+pub fn add_leaf(v: &mut Vec<usize>, leaf: usize, branch: usize) -> Vec<usize> {
     v.push(branch);
 
     let mut ancestry_add = get_ancestry(v);

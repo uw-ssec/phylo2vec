@@ -98,7 +98,7 @@ impl TreeVec {
     /// Modifies the tree structure by removing the leaf and updating indices
     pub fn remove_leaf(&mut self, leaf: usize) -> usize {
         let mut vec = self.data.clone();
-        let(leaf, data) = ops::remove_leaf(&mut vec, leaf);
+        let (leaf, data) = ops::remove_leaf(&mut vec, leaf);
         self.data = data;
         return leaf;
     }
