@@ -81,7 +81,7 @@ pub fn add_leaf(v: &mut Vec<usize>, leaf: usize, branch: usize) ->  Vec<usize> {
 ///
 /// # Side effects
 /// Modifies the tree structure by removing the leaf and updating indices
-pub fn remove_leaf(v: &mut Vec<usize>, leaf: usize) -> (usize, Vec<usize>) {
+pub fn remove_leaf(v: &mut Vec<usize>, leaf: usize) -> (Vec<usize>, usize) {
     let ancestry = get_ancestry(v);
     let leaf_coords = find_coords_of_first_leaf(&ancestry, leaf);
     let leaf_row = leaf_coords.0;
@@ -127,7 +127,7 @@ pub fn remove_leaf(v: &mut Vec<usize>, leaf: usize) -> (usize, Vec<usize>) {
     order_cherries_no_parents(&mut ancestry_rm);
     let new_vec = build_vector(&ancestry_rm);
 
-    return (sister, new_vec);
+    return (new_vec, sister);
 }
 
 #[cfg(test)]
@@ -201,7 +201,7 @@ mod tests {
         #[case] branch: usize,
         #[case] expected: Vec<usize>,
     ) {
-        let (sister, new_vec) = remove_leaf(&mut v, leaf);
+        let (new_vec, sister) = remove_leaf(&mut v, leaf);
         assert_eq!(new_vec, expected);
         assert_eq!(sister, branch);
     }
