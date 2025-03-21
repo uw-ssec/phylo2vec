@@ -2,12 +2,14 @@
 IO module for phylo2vec package. Convenience functions to read/write Newick trees and phylo2vec vectors.
 """
 
+from pathlib import Path
+
 import numpy as np
 
 import phylo2vec
 
 
-def read_csv(path: str) -> np.ndarray:
+def read_vector_csv(path: str) -> np.ndarray:
     """
     Read a CSV file containing a phylo2vec vector.
 
@@ -24,7 +26,7 @@ def read_csv(path: str) -> np.ndarray:
     return np.loadtxt(path, delimiter=",")
 
 
-def write_csv(v: np.ndarray, path: str) -> None:
+def write_vector_csv(v: np.ndarray, path: str) -> None:
     """
     Write a CSV file containing a phylo2vec vector.
 
@@ -42,7 +44,7 @@ def write_csv(v: np.ndarray, path: str) -> None:
     np.savetxt(path, v, delimiter=",")
 
 
-def read_newick(path: str) -> str:
+def read_newick_file(path: str) -> str:
     """
     Read a Newick string from a file.
 
@@ -58,11 +60,12 @@ def read_newick(path: str) -> str:
     str
         The data in the Newick file.
     """
+    path = Path(path)
     with open(path, "r") as f:
         return f.read()
 
 
-def read_newick_labeled(path: str) -> tuple[str, dict]:
+def read_newick_file_labeled(path: str) -> tuple[str, dict]:
     """
     Read a Newick string with string labels from a file.
 
@@ -81,12 +84,12 @@ def read_newick_labeled(path: str) -> tuple[str, dict]:
         The data in the Newick file and the labels: (newick_int, labels)
 
     """
-    data = read_newick(path)
+    data = read_newick_file(path)
     newick_int, labels = phylo2vec.utils.create_label_mapping(data)
     return newick_int, labels
 
 
-def write_newick(newick: str, path: str) -> None:
+def write_newick_file(newick: str, path: str) -> None:
     """
     Write a Newick string to a file.
 
@@ -101,11 +104,12 @@ def write_newick(newick: str, path: str) -> None:
     -------
     None
     """
+    path = Path(path)
     with open(path, "w") as f:
         f.write(newick)
 
 
-def write_newick_labeled(newick: str, labels: dict, path: str) -> None:
+def write_newick_file_labeled(newick: str, labels: dict, path: str) -> None:
     """
     Write a Newick string with string labels to a file.
 
@@ -126,4 +130,4 @@ def write_newick_labeled(newick: str, labels: dict, path: str) -> None:
     None
     """
     labeled_newick = phylo2vec.utils.apply_label_mapping(newick, labels)
-    write_newick(labeled_newick, path)
+    write_newick_file(labeled_newick, path)

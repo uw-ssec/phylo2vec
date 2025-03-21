@@ -14,14 +14,14 @@ from phylo2vec.utils import (
     create_label_mapping,
     find_num_leaves,
     get_common_ancestor,
-    read_csv,
-    read_newick,
-    read_newick_labeled,
+    read_vector_csv,
+    read_newick_file,
+    read_newick_file_labeled,
     remove_leaf,
     sample,
-    write_csv,
-    write_newick,
-    write_newick_labeled,
+    write_vector_csv,
+    write_newick_file,
+    write_newick_file_labeled,
 )
 
 from .config import MAX_N_LEAVES, MIN_N_LEAVES, N_REPEATS
@@ -38,8 +38,8 @@ def test_read_write_newick(tmp_path, n_leaves):
     """
     v = sample(n_leaves)
     newick = to_newick(v)
-    write_newick(newick, tmp_path / "test.newick")
-    newick2 = read_newick(tmp_path / "test.newick")
+    write_newick_file(newick, tmp_path / "test.newick")
+    newick2 = read_newick_file(tmp_path / "test.newick")
     assert newick == newick2
 
 
@@ -53,8 +53,8 @@ def test_read_write_csv(tmp_path, n_leaves):
         Number of leaves
     """
     v = sample(n_leaves)
-    write_csv(v, tmp_path / "test.csv")
-    v2 = read_csv(tmp_path / "test.csv")
+    write_vector_csv(v, tmp_path / "test.csv")
+    v2 = read_vector_csv(tmp_path / "test.csv")
     assert np.all(v == v2)
 
 
@@ -72,8 +72,8 @@ def test_read_write_newick_labeled(tmp_path, n_leaves):
     # Random Newick string
     newick_labeled = t.write(format=9)
     newick_int, label_mapping = create_label_mapping(newick_labeled)
-    write_newick_labeled(newick_int, label_mapping, tmp_path / "test_labeled.newick")
-    newick_read, label_mapping_read = read_newick_labeled(
+    write_newick_file_labeled(newick_int, label_mapping, tmp_path / "test_labeled.newick")
+    newick_read, label_mapping_read = read_newick_file_labeled(
         tmp_path / "test_labeled.newick"
     )
     assert newick_labeled == apply_label_mapping(newick_read, label_mapping_read)

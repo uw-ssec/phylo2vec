@@ -19,12 +19,12 @@ from .vector import (
     reroot_at_random,
 )
 from .io import (
-    read_csv,
-    write_csv,
-    read_newick,
-    write_newick,
-    read_newick_labeled,
-    write_newick_labeled,
+    read_vector_csv,
+    write_vector_csv,
+    read_newick_file,
+    write_newick_file,
+    read_newick_file_labeled,
+    write_newick_file_labeled,
 )
 
 
@@ -42,10 +42,10 @@ __all__ = [
     "reroot_at_random",
     "sample",
     "seed_everything",
-    "read_csv",
-    "write_csv",
-    "read_newick",
-    "write_newick",
-    "read_newick_labeled",
-    "write_newick_labeled",
+    "read_vector_csv",
+    "write_vector_csv",
+    "read_newick_file",
+    "write_newick_file",
+    "read_newick_file_labeled",
+    "write_newick_file_labeled",
 ]
