@@ -41,6 +41,9 @@ def test_read_write_newick(tmp_path, n_leaves):
     write_newick_file(newick, tmp_path / "test.newick")
     newick2 = read_newick_file(tmp_path / "test.newick")
     assert newick == newick2
+    write_newick_file(newick, tmp_path / "test.random")
+    with pytest.raises(Exception):
+        _ = read_newick_file(tmp_path / "test.random")
 
 
 @pytest.mark.parametrize("n_leaves", [MIN_N_LEAVES, MAX_N_LEAVES + 1])
@@ -56,6 +59,9 @@ def test_read_write_csv(tmp_path, n_leaves):
     write_vector_csv(v, tmp_path / "test.csv")
     v2 = read_vector_csv(tmp_path / "test.csv")
     assert np.all(v == v2)
+    write_vector_csv(v, tmp_path / "test.random")
+    with pytest.raises(Exception):
+        _ = read_vector_csv(tmp_path / "test.random")
 
 
 @pytest.mark.parametrize("n_leaves", [MIN_N_LEAVES, MAX_N_LEAVES + 1])
