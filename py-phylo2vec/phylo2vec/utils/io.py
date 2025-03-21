@@ -8,8 +8,8 @@ import numpy as np
 
 import phylo2vec
 
-ACCEPTED_NEWICK_EXTENSIONS = [".txt", ".nwk", ".newick", ".tree", ".treefile"]
-ACCEPTED_VECTOR_EXTENSIONS = [".csv"]
+ACCEPTED_NEWICK_FILE_EXTENSIONS = [".txt", ".nwk", ".newick", ".tree", ".treefile"]
+ACCEPTED_VECTOR_FILE_EXTENSIONS = [".csv"]
 
 
 def read_vector_csv(path: str) -> np.ndarray:
@@ -32,7 +32,7 @@ def read_vector_csv(path: str) -> np.ndarray:
         If the file extension is not supported. Accepted extensions include .csv
     """
     path = Path(path)
-    if path.suffix not in ACCEPTED_VECTOR_EXTENSIONS:
+    if path.suffix not in ACCEPTED_VECTOR_FILE_EXTENSIONS:
         raise ValueError("File extension must be .csv")
     return np.loadtxt(path, delimiter=",")
 
@@ -77,7 +77,7 @@ def read_newick_file(path: str) -> str:
         If the file extension is not supported. Accepted extensions include .txt, .nwk, .newick, .tree, .treefile
     """
     path = Path(path)
-    if path.suffix not in ACCEPTED_NEWICK_EXTENSIONS:
+    if path.suffix not in ACCEPTED_NEWICK_FILE_EXTENSIONS:
         raise ValueError("Unsupported file extension")
     with open(path, "r") as f:
         return f.read()
