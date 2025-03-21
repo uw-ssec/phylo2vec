@@ -82,7 +82,8 @@ impl TreeVec {
     /// # Result
     /// Modifies the tree structure by adding the new leaf and updating indices
     pub fn add_leaf(&mut self, leaf: usize, branch: usize) {
-        ops::add_leaf(self, leaf, branch);
+        let mut vec = self.data.clone();
+        self.data = ops::add_leaf(&mut vec, leaf, branch);
     }
 
     /// Removes a leaf from the tree
@@ -96,7 +97,10 @@ impl TreeVec {
     /// # Side effects
     /// Modifies the tree structure by removing the leaf and updating indices
     pub fn remove_leaf(&mut self, leaf: usize) -> usize {
-        return ops::remove_leaf(self, leaf);
+        let mut vec = self.data.clone();
+        let(leaf, data) = ops::remove_leaf(&mut vec, leaf);
+        self.data = data;
+        return leaf;
     }
 }
 

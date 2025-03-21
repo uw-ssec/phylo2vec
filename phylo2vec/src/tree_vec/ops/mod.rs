@@ -2,7 +2,6 @@ pub mod avl;
 pub mod newick;
 pub mod vector;
 
-use super::TreeVec;
 use crate::tree_vec::types::Ancestry;
 
 pub use vector::{
@@ -42,16 +41,16 @@ pub fn to_vector(newick: &str) -> Vec<usize> {
 ///
 /// # Result
 /// Modifies the tree structure by adding the new leaf and updating indices
-pub fn add_leaf(tree: &mut TreeVec, leaf: usize, branch: usize) {
-    tree.data.push(branch);
+pub fn add_leaf(v: &mut Vec<usize>, leaf: usize, branch: usize) ->  Vec<usize> {
+    v.push(branch);
 
-    let mut ancestry_add = tree.get_ancestry();
+    let mut ancestry_add = get_ancestry(v);
 
     println!("{:?}", ancestry_add);
     let mut found_first_leaf = false;
     for r in 0..ancestry_add.len() {
         for c in 0..3 {
-            if !found_first_leaf && ancestry_add[r][c] == tree.data.len() {
+            if !found_first_leaf && ancestry_add[r][c] == v.len() {
                 // Find the indices of the first leaf
                 // and then set the value to the new leaf
                 ancestry_add[r][c] = leaf;
@@ -66,7 +65,9 @@ pub fn add_leaf(tree: &mut TreeVec, leaf: usize, branch: usize) {
     // let ancestry_add_ref = &mut ancestry_add;
     order_cherries(&mut ancestry_add);
     order_cherries_no_parents(&mut ancestry_add);
-    tree.data = build_vector(&ancestry_add);
+    let new_vec = build_vector(&ancestry_add);
+
+    new_vec
 }
 
 /// Removes a leaf from the tree
@@ -80,8 +81,8 @@ pub fn add_leaf(tree: &mut TreeVec, leaf: usize, branch: usize) {
 ///
 /// # Side effects
 /// Modifies the tree structure by removing the leaf and updating indices
-pub fn remove_leaf(tree: &mut TreeVec, leaf: usize) -> usize {
-    let ancestry = tree.get_ancestry();
+pub fn remove_leaf(v: &mut Vec<usize>, leaf: usize) -> (usize, Vec<usize>) {
+    let ancestry = get_ancestry(v);
     let leaf_coords = find_coords_of_first_leaf(&ancestry, leaf);
     let leaf_row = leaf_coords.0;
     let leaf_col = leaf_coords.1;
@@ -124,9 +125,9 @@ pub fn remove_leaf(tree: &mut TreeVec, leaf: usize) -> usize {
 
     order_cherries(&mut ancestry_rm);
     order_cherries_no_parents(&mut ancestry_rm);
-    tree.data = build_vector(&ancestry_rm);
+    let new_vec = build_vector(&ancestry_rm);
 
-    return sister;
+    return (sister, new_vec);
 }
 
 #[cfg(test)]
@@ -178,14 +179,13 @@ mod tests {
     #[case(vec![0, 1, 2, 5, 4, 2], 7, 0, vec![0, 1, 2, 5, 4, 2, 0])]
     #[case(vec![0, 1, 2, 5, 4, 2], 7, 2, vec![0, 1, 2, 5, 4, 2, 2])]
     fn test_add_leaf(
-        #[case] v: Vec<usize>,
+        #[case] mut v: Vec<usize>,
         #[case] leaf: usize,
         #[case] branch: usize,
         #[case] expected: Vec<usize>,
     ) {
-        let mut tree = TreeVec::new(v, None, None);
-        tree.add_leaf(leaf, branch);
-        assert_eq!(tree.data, expected);
+        let new_vec = add_leaf(&mut v, leaf, branch);
+        assert_eq!(new_vec, expected);
     }
 
     /// Test the removal of a leaf from the tree
@@ -196,14 +196,13 @@ mod tests {
     #[case(vec![0, 1, 2, 5, 4, 2], 6, 2, vec![0, 1, 2, 5, 4])]
     #[case(vec![0, 1, 2, 5, 4, 2], 0, 11, vec![0, 1, 4, 3, 1])]
     fn test_remove_leaf(
-        #[case] v: Vec<usize>,
+        #[case] mut v: Vec<usize>,
         #[case] leaf: usize,
         #[case] branch: usize,
         #[case] expected: Vec<usize>,
     ) {
-        let mut tree = TreeVec::new(v, None, None);
-        let sister = tree.remove_leaf(leaf);
-        assert_eq!(tree.data, expected);
+        let (sister, new_vec) = remove_leaf(&mut v, leaf);
+        assert_eq!(new_vec, expected);
         assert_eq!(sister, branch);
     }
 }
