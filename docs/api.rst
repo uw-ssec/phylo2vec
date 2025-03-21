@@ -49,9 +49,9 @@ Utils - IO
     :nosignatures:
     :toctree: generated/
 
-    utils.read_newick
-    utils.write_newick
-    utils.read_csv
-    utils.write_csv
-    utils.read_newick_labeled
-    utils.write_newick_labeled
+    utils.read_newick_file
+    utils.write_newick_file
+    utils.read_vector_csv
+    utils.write_vector_csv
+    utils.read_newick_file_labeled
+    utils.write_newick_file_labeled
