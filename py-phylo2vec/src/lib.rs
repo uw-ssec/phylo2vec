@@ -6,7 +6,7 @@ use phylo2vec::utils;
 /// This function takes a Python list and converts it to a Rust vector.
 #[pyfunction]
 fn to_newick(input_vector: Vec<usize>) -> PyResult<String> {
-    let newick = ops::to_newick(&input_vector);
+    let newick = ops::to_newick_from_vector(&input_vector);
     Ok(newick)
 }
 

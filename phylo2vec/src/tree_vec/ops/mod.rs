@@ -15,7 +15,7 @@ pub use vector::{
 pub use newick::{build_newick, get_cherries, get_cherries_no_parents, has_parents};
 
 /// Recover a rooted tree (in Newick format) from a Phylo2Vec vector
-pub fn to_newick(v: &Vec<usize>) -> String {
+pub fn to_newick_from_vector(v: &Vec<usize>) -> String {
     let ancestry: Ancestry = get_ancestry(&v);
     build_newick(&ancestry)
 }
@@ -156,7 +156,7 @@ mod tests {
     #[case(vec![0, 1, 2, 3, 4], "(0,(1,(2,(3,(4,5)6)7)8)9)10;")]
     #[case(vec![0, 0, 1], "((0,2)5,(1,3)4)6;")]
     fn test_to_newick(#[case] v: Vec<usize>, #[case] expected: &str) {
-        let newick = to_newick(&v);
+        let newick = to_newick_from_vector(&v);
         assert_eq!(newick, expected);
     }
 

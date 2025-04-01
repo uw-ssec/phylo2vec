@@ -349,7 +349,7 @@ pub fn build_newick(ancestry: &Ancestry) -> String {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::tree_vec::ops::to_newick;
+    use crate::tree_vec::ops::to_newick_from_vector;
     use crate::utils::sample_vector;
     use rstest::*;
 
@@ -368,7 +368,7 @@ mod tests {
     #[case(1000)]
     fn test_has_parents(#[case] n_leaves: usize) {
         let v = sample_vector(n_leaves, false);
-        let newick = to_newick(&v);
+        let newick = to_newick_from_vector(&v);
         // Check if the newick string has parents
         let result = has_parents(&newick);
         assert_eq!(result, true);
@@ -384,7 +384,7 @@ mod tests {
     #[case(1000)]
     fn test_find_num_leaves(#[case] n_leaves: usize) {
         let v = sample_vector(n_leaves, false);
-        let newick = to_newick(&v);
+        let newick = to_newick_from_vector(&v);
         // Check if the newick string has parents
         let result = find_num_leaves(&newick);
         assert_eq!(result, n_leaves);

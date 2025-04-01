@@ -11,12 +11,21 @@ fn sample(n_leaves: usize, ordered: bool) -> Vec<i32> {
     v.iter().map(|&x| x as i32).collect()
 }
 
-/// Recover a rooted tree (in Newick format) from a Phylo2Vec v
+/// Recover a rooted tree (in Newick format) from a Phylo2Vec vector
 /// @export
 #[extendr]
-fn to_newick(input_integers: Vec<i32>) -> String {
+fn to_newick_from_vector(input_integers: Vec<i32>) -> String {
     let input_vector = input_integers.iter().map(|&x| x as usize).collect();
-    let newick = ops::to_newick(&input_vector);
+    let newick = ops::to_newick_from_vector(&input_vector);
+    newick
+}
+
+/// Recover a rooted tree (in Newick format) from a Phylo2Vec matrix
+/// @export
+#[extendr]
+fn to_newick_from_matrix(input_integers: Vec<Vec<i32>>) -> String {
+    let input_matrix = input_integers.iter().map(|v| v.iter().map(|&x| x as f32).collect()).collect();
+    let newick = ops::to_newick_from_matrix(&input_matrix);
     newick
 }
 
@@ -42,7 +51,8 @@ fn check_v(input_integers: Vec<i32>) {
 extendr_module! {
     mod phylo2vec;
     fn sample;
-    fn to_newick;
+    fn to_newick_from_vector;
+    fn to_newick_from_matrix;
     fn to_vector;
     fn check_v;
 }
