@@ -11,6 +11,12 @@ fn to_newick(input_vector: Vec<usize>) -> PyResult<String> {
 }
 
 #[pyfunction]
+fn to_newick_from_matrix(input_matrix: Vec<Vec<f32>>) -> PyResult<String> {
+    let newick = ops::to_newick_from_matrix(&input_matrix);
+    Ok(newick)
+}
+
+#[pyfunction]
 fn to_vector(newick: &str) -> Vec<usize> {
     let v = ops::to_vector(&newick);
     v
@@ -73,6 +79,7 @@ fn remove_leaf(mut input_vector: Vec<usize>, leaf: usize) -> (Vec<usize>, usize)
 fn _phylo2vec_core(m: &Bound<'_, PyModule>) -> PyResult<()> {
     m.add_function(wrap_pyfunction!(to_newick, m)?)?;
     m.add_function(wrap_pyfunction!(to_vector, m)?)?;
+    m.add_function(wrap_pyfunction!(to_newick_from_matrix, m)?)?;
     m.add_function(wrap_pyfunction!(to_matrix, m)?)?;
     m.add_function(wrap_pyfunction!(build_newick, m)?)?;
     m.add_function(wrap_pyfunction!(get_ancestry, m)?)?;
