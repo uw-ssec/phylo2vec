@@ -280,7 +280,7 @@ pub fn build_newick_with_bls(ancestry: &Ancestry, branch_lengths: &Vec<[f32; 2]>
 
             // Update node indices
             node_idxs.insert(c1, node_idxs[&p] + 1);
-            node_idxs.insert(c2, node_idxs[&c1] + 1 + format!("{}:{:.1}", c1, b1).len()); 
+            node_idxs.insert(c2, node_idxs[&c1] + 1 + format!("{}:{:.1}", c1, b1).len());
             // Add children to the queue if they are internal nodes
             if c1 > n_max {
                 queue.push(c1);

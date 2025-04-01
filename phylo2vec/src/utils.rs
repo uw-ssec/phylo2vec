@@ -117,7 +117,7 @@ pub fn check_v(v: &Vec<usize>) -> () {
 /// check_m(vec![
 /// vec![0.0, 0.0, 0.0],
 /// vec![0.0, 0.1, 0.2],
-/// vec![1.0, 0.5, 0.7],]); 
+/// vec![1.0, 0.5, 0.7],]);
 ///
 /// check_m(&matrix); // Passes validation
 ///
@@ -128,10 +128,12 @@ pub fn check_m(matrix: &Vec<Vec<f32>>) -> () {
 
     // Ensure all branch lengths (remaining columns) are non-negative
     for row in matrix.iter() {
-        assert!(row[1] >= 0.0 && row[2] >= 0.0, "Branch lengths must be positive");
+        assert!(
+            row[1] >= 0.0 && row[2] >= 0.0,
+            "Branch lengths must be positive"
+        );
     }
 }
-
 
 /// Validate the maximum value of a Phylo2Vec vector element
 ///
