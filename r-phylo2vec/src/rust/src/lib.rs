@@ -24,7 +24,10 @@ fn to_newick_from_vector(input_integers: Vec<i32>) -> String {
 /// @export
 #[extendr]
 fn to_newick_from_matrix(input_integers: Vec<Vec<i32>>) -> String {
-    let input_matrix = input_integers.iter().map(|v| v.iter().map(|&x| x as f32).collect()).collect();
+    let input_matrix = input_integers
+        .iter()
+        .map(|v| v.iter().map(|&x| x as f32).collect())
+        .collect();
     let newick = ops::to_newick_from_matrix(&input_matrix);
     newick
 }
