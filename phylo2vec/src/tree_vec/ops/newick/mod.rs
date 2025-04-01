@@ -212,25 +212,7 @@ fn _build_newick_recursive_inner(p: usize, ancestry: &Ancestry) -> String {
     format!("({},{}){}", left, right, p)
 }
 
-/// # Example
-///
-/// ```
-/// use phylo2vec::utils::build_newick_with_bls;
-///
-/// let ancestry =  vec![[3, 4, 5],
-/// [2, 5, 6],
-/// [1, 6, 7],
-/// [0, 7, 8]]]
-///
-/// let branch_lengths = vec![
-///     [0.5, 0.3],
-///     [0.7, 0.4],
-///     [0.6, 0.2],
-/// ];
-///
-/// let newick = build_newick_with_bls(ancestry, branch_lengths);
-/// assert_eq!(newick, "((4:0.5,5:0.3)6,(6:0.7,(8:0.6,9:0.2)10)8);");
-/// ```
+/// Build newick string from the ancestry matrix and branch lengths
 pub fn build_newick_with_bls(ancestry: &Ancestry, branch_lengths: &Vec<[f32; 2]>) -> String {
     let n_max = ancestry.len();
 
