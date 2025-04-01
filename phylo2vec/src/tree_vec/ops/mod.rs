@@ -20,16 +20,13 @@ pub fn to_newick(v: &Vec<usize>) -> String {
     build_newick(&ancestry)
 }
 
+/// Recover a rooted tree (in Newick format) from a Phylo2Vec matrix
 pub fn to_newick_from_matrix(m: &Vec<Vec<f32>>) -> String {
-    // First, check the matrix structure
+    // First, check the matrix structure for validity
     check_m(m);
 
     let (v, bls) = parse_matrix(&m);
-
-    // Call _get_ancestry to get the ancestry matrix
     let ancestry = get_ancestry(&v);
-
-    // Call _build_newick_with_bls to construct the Newick tree string
     build_newick_with_bls(&ancestry, &bls)
 }
 

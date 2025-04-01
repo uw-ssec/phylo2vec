@@ -83,6 +83,17 @@ fn _get_sorted_indices(ancestry: &Ancestry) -> Vec<usize> {
     indices
 }
 
+/// Parses a matrix into its vector and branch length components.
+///
+/// # Arguments
+///
+/// * `matrix` - A phylogenetic tree represented in matrix format.
+///
+/// # Returns
+///
+/// * A Vec<usize> - the tree's vector representation and 
+/// * A Vec<[f32; 2]> - the vector's associated branch lengths
+///
 pub fn parse_matrix(matrix: &Vec<Vec<f32>>) -> (Vec<usize>, Vec<[f32; 2]>) {
     let mut vector = Vec::new();
     let mut branch_lengths = Vec::new();
