@@ -220,7 +220,7 @@ fn _build_newick_recursive_inner(p: usize, ancestry: &Ancestry) -> String {
 /// let ancestry =  vec![[3, 4, 5],
 /// [2, 5, 6],
 /// [1, 6, 7],
-/// [0, 7, 8]])]
+/// [0, 7, 8]]]
 ///
 /// let branch_lengths = vec![
 ///     [0.5, 0.3],

@@ -114,12 +114,10 @@ pub fn check_v(v: &Vec<usize>) -> () {
 /// ```
 /// use phylo2vec::utils::{check_m};
 ///
-/// check_m(vec![
+/// check_m(&vec![
 /// vec![0.0, 0.0, 0.0],
 /// vec![0.0, 0.1, 0.2],
 /// vec![1.0, 0.5, 0.7],]);
-///
-/// check_m(&matrix); // Passes validation
 ///
 pub fn check_m(matrix: &Vec<Vec<f32>>) -> () {
     // Validate the vector part (first column)
