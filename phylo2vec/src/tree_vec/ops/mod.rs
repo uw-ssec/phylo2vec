@@ -155,7 +155,7 @@ mod tests {
     #[case(vec![0, 0, 0, 1, 3], "(((0,(3,5)6)8,2)9,(1,4)7)10;")]
     #[case(vec![0, 1, 2, 3, 4], "(0,(1,(2,(3,(4,5)6)7)8)9)10;")]
     #[case(vec![0, 0, 1], "((0,2)5,(1,3)4)6;")]
-    fn test_to_newick(#[case] v: Vec<usize>, #[case] expected: &str) {
+    fn test_to_newick_from_vector(#[case] v: Vec<usize>, #[case] expected: &str) {
         let newick = to_newick_from_vector(&v);
         assert_eq!(newick, expected);
     }
