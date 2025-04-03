@@ -1,4 +1,5 @@
 use extendr_api::prelude::*;
+use nalgebra::DMatrix;
 
 use phylo2vec::tree_vec::ops;
 use phylo2vec::utils;
@@ -23,11 +24,14 @@ fn to_newick_from_vector(input_integers: Vec<i32>) -> String {
 /// Recover a rooted tree (in Newick format) from a Phylo2Vec matrix
 /// @export
 #[extendr]
-fn to_newick_from_matrix(input_integers: Vec<Vec<i32>>) -> String {
+fn to_newick_from_matrix(input_integers: DMatrix<i32>) -> String {
     let input_matrix = input_integers
         .iter()
-        .map(|v| v.iter().map(|&x| x as f32).collect())
-        .collect();
+        .map(|&x| x as f32)
+        .collect::<Vec<f32>>()
+        .chunks(input_integers.ncols())
+        .map(|chunk| chunk.to_vec())
+        .collect::<Vec<Vec<f32>>>();
     let newick = ops::to_newick_from_matrix(&input_matrix);
     newick
 }
