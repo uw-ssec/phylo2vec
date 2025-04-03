@@ -1,5 +1,4 @@
 use extendr_api::prelude::*;
-use nalgebra::DMatrix;
 
 use phylo2vec::tree_vec::ops;
 use phylo2vec::utils;
@@ -26,7 +25,7 @@ fn to_newick_from_vector(input_integers: Vec<i32>) -> String {
 #[extendr]
 fn to_newick_from_matrix(input_integers: Robj) -> String {
     // Convert the input into an integer matrix
-    let input_matrix = input
+    let input_matrix = input_integers
         .as_integer_matrix()
         .expect("Expected an integer matrix");
 
