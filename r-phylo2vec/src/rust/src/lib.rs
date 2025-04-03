@@ -24,14 +24,12 @@ fn to_newick_from_vector(input_integers: Vec<i32>) -> String {
 /// Recover a rooted tree (in Newick format) from a Phylo2Vec matrix
 /// @export
 #[extendr]
-fn to_newick_from_matrix(input_integers: DMatrix<i32>) -> String {
-    let input_matrix = input_integers
-        .iter()
-        .map(|&x| x as f32)
-        .collect::<Vec<f32>>()
-        .chunks(input_integers.ncols())
-        .map(|chunk| chunk.to_vec())
-        .collect::<Vec<Vec<f32>>>();
+fn to_newick_from_matrix(input_integers: Robj) -> String {
+    // Convert the input into an integer matrix
+    let input_matrix = input
+        .as_integer_matrix()
+        .expect("Expected an integer matrix");
+
     let newick = ops::to_newick_from_matrix(&input_matrix);
     newick
 }
