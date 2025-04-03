@@ -3,9 +3,8 @@ use pyo3::prelude::*;
 use phylo2vec::tree_vec::ops;
 use phylo2vec::utils;
 
-/// This function takes a Python list and converts it to a Rust vector.
 #[pyfunction]
-fn to_newick(input_vector: Vec<usize>) -> PyResult<String> {
+fn to_newick_from_vector(input_vector: Vec<usize>) -> PyResult<String> {
     let newick = ops::to_newick_from_vector(&input_vector);
     Ok(newick)
 }
@@ -77,7 +76,7 @@ fn remove_leaf(mut input_vector: Vec<usize>, leaf: usize) -> (Vec<usize>, usize)
 /// This module is exposed to Python.
 #[pymodule]
 fn _phylo2vec_core(m: &Bound<'_, PyModule>) -> PyResult<()> {
-    m.add_function(wrap_pyfunction!(to_newick, m)?)?;
+    m.add_function(wrap_pyfunction!(to_newick_from_vector, m)?)?;
     m.add_function(wrap_pyfunction!(to_vector, m)?)?;
     m.add_function(wrap_pyfunction!(to_newick_from_matrix, m)?)?;
     m.add_function(wrap_pyfunction!(to_matrix, m)?)?;
