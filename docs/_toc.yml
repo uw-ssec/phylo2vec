@@ -10,4 +10,5 @@ parts:
       - file: demo.ipynb
   - caption: Help and References
     chapters:
+      - file: development.md
       - file: api.rst
