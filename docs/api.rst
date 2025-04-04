@@ -34,7 +34,7 @@ Utils
     utils.apply_label_mapping
     utils.remove_annotations
     utils.remove_parent_labels
-    utils.sample
+    utils.sample_vector
     utils.seed_everything
     utils.check_v
     utils.reorder_v
@@ -42,3 +42,16 @@ Utils
     utils.remove_leaf
     utils.add_leaf
     utils.get_common_ancestor
+
+Utils - IO
+----------------
+.. autosummary::
+    :nosignatures:
+    :toctree: generated/
+
+    utils.read_newick_file
+    utils.write_newick_file
+    utils.read_vector_csv
+    utils.write_vector_csv
+    utils.read_newick_file_labeled
+    utils.write_newick_file_labeled
