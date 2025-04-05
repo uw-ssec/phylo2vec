@@ -73,7 +73,7 @@ def to_newick(m):
     """
     check_m(m)
 
-    v, bls = np.split(m, (1,), axis=1)
+    v, bls = m[:, 0], m[:, 1:]
 
     ancestry = _get_ancestry(v.astype(np.uint32)[:, 0])
 
