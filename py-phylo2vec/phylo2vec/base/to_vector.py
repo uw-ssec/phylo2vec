@@ -10,61 +10,86 @@ import numpy as np
 
 from phylo2vec import _phylo2vec_core
 
-def _reduce(newick):
+
+def stoi_substr(s, start):
+    # -1 because newick strings end with a semicolon
+    s_substr = s[start:-1].split(",", 1)[0].split(")", 1)[0]
+
+    end = start + len(s_substr)
+
+    return int(s_substr), end
+
+
+def _get_cherries(newick):
     ancestry = []
+    stack = []
 
-    def do_reduce(ancestry, newick):
-        for i, char in enumerate(newick):
-            if char == "(":
-                open_idx = i + 1
-            elif char == ")":
-                child1, child2 = newick[open_idx:i].split(",", 2)
-                parent = newick[i + 1 :].split(",", 1)[0].split(")", 1)[0]
+    i = 0
+    while i < len(newick):
+        char = newick[i]
+        if char == ")":
+            i += 1
 
-                ancestry.append(
-                    [
-                        int(child1),
-                        int(child2),
-                        int(parent),
-                    ]
-                )
-                newick = newick[: open_idx - 1] + newick[i + 1 :]
+            # Pop the children nodes from the stack
+            c2 = stack.pop()
+            c1 = stack.pop()
 
-                return do_reduce(ancestry, newick)
+            # Get the parent node after )
+            p, end = stoi_substr(newick, i)
+            i = end - 1
 
-    do_reduce(ancestry, newick[:-1])
+            # Add the triplet (c1, c2, p)
+            ancestry.append([c1, c2, int(p)])
 
-    return np.array(ancestry, dtype=np.int16)
+            # Push the parent node to the stack
+            stack.append(p)
+        elif "0" <= char <= "9":
+            # Get the next node and push it to the stack
+            node, end = stoi_substr(newick, i)
+
+            stack.append(node)
+
+            i = end - 1
+
+        i += 1
+
+    return np.asarray(ancestry, dtype=np.int32)
 
 
-def _reduce_no_parents(newick):
+def _get_cherries_no_parents(newick):
     ancestry = []
+    stack = []
 
-    def do_reduce(ancestry, newick):
-        for i, char in enumerate(newick):
-            if char == "(":
-                open_idx = i + 1
-            elif char == ")":
-                child1, child2 = newick[open_idx:i].split(",", 2)
+    i = 0
+    while i < len(newick):
+        char = newick[i]
+        if char == ")":
+            # Pop the children nodes from the stack
+            c2 = stack.pop()
+            c1 = stack.pop()
 
-                child1 = int(child1)
-                child2 = int(child2)
+            c_min, c_max = sorted([c1, c2])
 
-                ancestry.append([child1, child2, max(child1, child2)])
+            # No parent annotation --> store the max leaf
+            ancestry.append([c1, c2, c_max])
 
-                newick = newick.replace(
-                    newick[open_idx - 1 : i + 1], f"{min(child1, child2)}"
-                )
+            # Push the min leaf to the stack
+            stack.append(c_min)
+        elif "0" <= char <= "9":
+            # Get the next leaf and push it to the stack
+            node, end = stoi_substr(newick, i)
 
-                return do_reduce(ancestry, newick)
+            stack.append(node)
 
-    do_reduce(ancestry, newick[:-1])
+            i = end - 1
 
-    return np.array(ancestry, dtype=np.int16)
+        i += 1
+
+    return np.asarray(ancestry, dtype=np.int32)
 
 
 @nb.njit(cache=True)
-def _find_cherries(ancestry):
+def _order_cherries(ancestry):
     ancestry_sorted = ancestry[np.argsort(ancestry[:, -1]), :]
 
     small_children = nb.typed.Dict.empty(
@@ -93,6 +118,7 @@ def _order_cherries_no_parents(cherries):
     for i in range(n_cherries):
         unvisited = np.ones((n_cherries + 1,), dtype=np.uint8)
         max_leaf = -1
+        idx = -1
 
         for j, ch in enumerate(old_cherries):
             if idxs[j] == 1:

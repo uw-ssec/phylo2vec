@@ -1,9 +1,11 @@
 """
 Methods to convert a Phylo2Vec vector to a Newick-format string.
 """
+
 import numpy as np
 
 from phylo2vec import _phylo2vec_core
+
 
 def _get_ancestry(v: np.ndarray) -> np.ndarray:
     """
