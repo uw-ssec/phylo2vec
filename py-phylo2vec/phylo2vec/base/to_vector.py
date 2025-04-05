@@ -49,12 +49,12 @@ def _get_cherries(newick):
             ancestry.append([c1, c2, int(p)])
 
             # Push the parent node to the stack
-            stack.append(p)
+            stack.append(int(p))
         elif "0" <= char <= "9":
             # Get the next node and push it to the stack
             node, end = _node_substr(newick, i)
 
-            stack.append(node)
+            stack.append(int(node))
 
             i = end - 1
 

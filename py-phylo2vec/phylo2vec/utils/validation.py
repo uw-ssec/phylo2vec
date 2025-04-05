@@ -31,4 +31,5 @@ def check_m(m):
 
     check_v(m[:, 0])
 
-    assert np.all(m[:, 1:] > 0)
+    if not np.all(m[:, 1:] > 0):
+        raise ValueError("All branch lengths must be positive")

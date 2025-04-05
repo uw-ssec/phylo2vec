@@ -25,7 +25,8 @@ use crate::tree_vec::types::Ancestry;
 /// Assumes a valid Newick string. Relies on helper functions for processing.
 pub fn to_matrix(newick: &str) -> Vec<Vec<f32>> {
     // Get the ancestry and branch lengths
-    let (mut ancestry, bls) = get_cherries_with_bls(newick);
+    let (mut ancestry, bls) =
+        get_cherries_with_bls(newick).expect("failed to get cherries with branch lengths");
     let indices = _get_sorted_indices(&ancestry);
 
     order_cherries(&mut ancestry); // Order the cherries in the ancestry matrix based on parent values
@@ -49,7 +50,8 @@ pub fn to_matrix(newick: &str) -> Vec<Vec<f32>> {
 
 // Matrix construction for the "no parents" case
 pub fn to_matrix_no_parents(newick: &str) -> Vec<Vec<f32>> {
-    let (mut ancestry, bls) = get_cherries_no_parents_with_bls(newick); // Using the `get_cherries_no_parents` function directly
+    let (mut ancestry, bls) = get_cherries_no_parents_with_bls(newick)
+        .expect("failed to get cherries with branch lengths and no parents");
     let indices = _get_sorted_indices(&ancestry);
     order_cherries_no_parents(&mut ancestry);
 
