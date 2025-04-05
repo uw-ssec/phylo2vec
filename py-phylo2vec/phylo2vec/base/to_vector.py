@@ -11,13 +11,20 @@ import numpy as np
 from phylo2vec import _phylo2vec_core
 
 
-def stoi_substr(s, start):
-    # -1 because newick strings end with a semicolon
-    s_substr = s[start:-1].split(",", 1)[0].split(")", 1)[0]
+def _node_substr(s, start):
+    end = 0
 
-    end = start + len(s_substr)
+    for i, c in enumerate(s[start:], start):
+        if c in (",", ")", ";"):
+            end = i
+            break
 
-    return int(s_substr), end
+    if end == 0:
+        raise ValueError(f"Failed to parse node in Newick string: {s}")
+
+    s_substr = s[start:end]
+
+    return s_substr, end
 
 
 def _get_cherries(newick):
@@ -35,7 +42,7 @@ def _get_cherries(newick):
             c1 = stack.pop()
 
             # Get the parent node after )
-            p, end = stoi_substr(newick, i)
+            p, end = _node_substr(newick, i)
             i = end - 1
 
             # Add the triplet (c1, c2, p)
@@ -45,7 +52,7 @@ def _get_cherries(newick):
             stack.append(p)
         elif "0" <= char <= "9":
             # Get the next node and push it to the stack
-            node, end = stoi_substr(newick, i)
+            node, end = _node_substr(newick, i)
 
             stack.append(node)
 
@@ -77,7 +84,7 @@ def _get_cherries_no_parents(newick):
             stack.append(c_min)
         elif "0" <= char <= "9":
             # Get the next leaf and push it to the stack
-            node, end = stoi_substr(newick, i)
+            node, end = _node_substr(newick, i)
 
             stack.append(node)
 
