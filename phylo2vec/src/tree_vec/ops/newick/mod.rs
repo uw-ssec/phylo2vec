@@ -153,7 +153,7 @@ pub fn get_cherries_with_bls(newick: &str) -> Result<(Ancestry, Vec<[f32; 2]>), 
             i = end - 1;
 
             if end == newick.len() - 1 {
-                let p = annotated_p.split(":").next().unwrap();
+                let p = annotated_p.split(':').next().unwrap();
                 let p_int: usize = p.parse::<usize>().map_err(NewickError::ParseIntError)?;
                 ancestry.push([c1, c2, p_int]);
             } else {
