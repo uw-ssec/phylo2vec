@@ -38,46 +38,7 @@ fn node_substr(s: &str, start: usize) -> (&str, usize) {
 
 pub fn get_cherries(newick: &str) -> Result<Ancestry, NewickError> {
     if newick.is_empty() {
-        return Ok(Vec::new()); // Return empty ancestry and branch length vectors
-    }
-    let mut ancestry: Ancestry = Vec::new();
-    let mut stack: Vec<usize> = Vec::new();
-
-    let newick_bytes = newick.as_bytes();
-
-    let mut i: usize = 0;
-    while i < newick.len() {
-        let c: char = newick_bytes[i] as char;
-
-        if c == ')' {
-            i += 1;
-
-            let c2: usize = stack.pop().ok_or(NewickError::StackUnderflow)?;
-            let c1: usize = stack.pop().ok_or(NewickError::StackUnderflow)?;
-
-            let (p, end) = node_substr(newick, i);
-            i = end - 1;
-
-            let p_int = p.parse::<usize>().map_err(NewickError::ParseIntError)?;
-
-            ancestry.push([c1, c2, p_int]);
-            stack.push(p_int);
-        } else if c.is_ascii_digit() {
-            let (node, end) = node_substr(newick, i);
-            i = end - 1;
-
-            stack.push(node.parse::<usize>().map_err(NewickError::ParseIntError)?);
-        }
-
-        i += 1;
-    }
-
-    Ok(ancestry)
-}
-
-pub fn get_cherries_no_parents(newick: &str) -> Result<Ancestry, NewickError> {
-    if newick.is_empty() {
-        return Ok(Vec::new()); // Return empty ancestry and branch length vectors
+        return Ok(Vec::new());
     }
     let mut ancestry: Ancestry = Vec::new();
     let mut stack: Vec<usize> = Vec::new();
@@ -95,15 +56,59 @@ pub fn get_cherries_no_parents(newick: &str) -> Result<Ancestry, NewickError> {
             let c2: usize = stack.pop().ok_or(NewickError::StackUnderflow)?;
             let c1: usize = stack.pop().ok_or(NewickError::StackUnderflow)?;
 
-            let mut c_ordered = vec![c1, c2];
+            // Get the parent node after ")"
+            let (p, end) = node_substr(newick, i);
+            i = end - 1;
+
+            let p_int = p.parse::<usize>().map_err(NewickError::ParseIntError)?;
+
+            // Add the triplet (c1, c2, p)
+            ancestry.push([c1, c2, p_int]);
+
+            // Push the parent node to the stack
+            stack.push(p_int);
+        } else if c.is_ascii_digit() {
+            // Get the next node and push it to the stack
+            let (node, end) = node_substr(newick, i);
+            i = end - 1;
+
+            stack.push(node.parse::<usize>().map_err(NewickError::ParseIntError)?);
+        }
+
+        i += 1;
+    }
+
+    Ok(ancestry)
+}
+
+pub fn get_cherries_no_parents(newick: &str) -> Result<Ancestry, NewickError> {
+    if newick.is_empty() {
+        return Ok(Vec::new());
+    }
+    let mut ancestry: Ancestry = Vec::new();
+    let mut stack: Vec<usize> = Vec::new();
+
+    let newick_bytes = newick.as_bytes();
+
+    let mut i: usize = 0;
+    while i < newick.len() {
+        let c: char = newick_bytes[i] as char;
+
+        if c == ')' {
+            // Pop the children nodes from the stack
+            let c2: usize = stack.pop().ok_or(NewickError::StackUnderflow)?;
+            let c1: usize = stack.pop().ok_or(NewickError::StackUnderflow)?;
+
+            let mut c_ordered = [c1, c2];
             c_ordered.sort();
 
             // No parent annotation --> store the max leaf
             ancestry.push([c1, c2, c_ordered[1]]);
 
-            // Push the min(c1, c2) back onto the stack to represent this internal node going forward
+            // Push the min leaf to the stack to represent this internal node going forward
             stack.push(c_ordered[0]);
         } else if c.is_ascii_digit() {
+            // Get the next leaf and push it to the stack
             let (leaf, end) = node_substr(newick, i);
             i = end - 1;
 
@@ -142,15 +147,14 @@ pub fn get_cherries_with_bls(newick: &str) -> Result<(Ancestry, Vec<[f32; 2]>), 
             // Pop the BLs from the BL stack
             let bl2: f32 = bl_stack.pop().ok_or(NewickError::StackUnderflow)?;
             let bl1: f32 = bl_stack.pop().ok_or(NewickError::StackUnderflow)?;
-            bls.append(&mut vec![[bl1, bl2]]);
+            bls.push([bl1, bl2]);
 
             let (annotated_p, end) = node_substr(newick, i);
             i = end - 1;
 
             if end == newick.len() - 1 {
-                let p_int: usize = annotated_p
-                    .parse::<usize>()
-                    .map_err(NewickError::ParseIntError)?;
+                let p = annotated_p.split(":").next().unwrap();
+                let p_int: usize = p.parse::<usize>().map_err(NewickError::ParseIntError)?;
                 ancestry.push([c1, c2, p_int]);
             } else {
                 // Add the triplet (c1, c2, p)
@@ -194,7 +198,7 @@ pub fn get_cherries_no_parents_with_bls(
 
     let mut i: usize = 0;
 
-    let newick_bytes = newick.as_bytes();
+    let newick_bytes: &[u8] = newick.as_bytes();
 
     while i < newick.len() {
         let c: char = newick_bytes[i] as char;
@@ -210,20 +214,19 @@ pub fn get_cherries_no_parents_with_bls(
             let bl2: f32 = bl_stack.pop().ok_or(NewickError::StackUnderflow)?;
             let bl1: f32 = bl_stack.pop().ok_or(NewickError::StackUnderflow)?;
 
-            let mut c_ordered = vec![c1, c2];
+            let mut c_ordered = [c1, c2];
             c_ordered.sort();
 
             // No parent annotation --> store the max leaf
             ancestry.push([c1, c2, c_ordered[1]]);
-            bls.append(&mut vec![[bl1, bl2]]);
-
+            bls.push([bl1, bl2]);
             // Find the parental BL
             // Ex: ":0.2"
             let (annotated_node, end) = node_substr(newick, i);
             i = end - 1;
 
-            if annotated_node.len() == 0 && end == newick.len() - 1 {
-                // if this is true, we reached the root which we don't have a parent BL
+            if annotated_node.is_empty() && end == newick.len() - 1 {
+                // if this is true, we reached the root without a BL
                 break;
             }
 
@@ -404,7 +407,7 @@ mod tests {
                 get_cherries_with_bls(newick).expect("failed to get cherries with branch lengths");
         } else {
             (ancestry, bls) = get_cherries_no_parents_with_bls(newick)
-                .expect("failed to get cherries with branch lengths and no parents");
+                .expect("failed to get cherries with branch lengths (no parents)");
         }
 
         // Verify the ancestry
