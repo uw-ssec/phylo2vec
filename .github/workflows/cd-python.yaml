@@ -17,7 +17,32 @@ env:
   MATURIN_MANIFEST_PATH: ./py-phylo2vec/Cargo.toml
 
 jobs:
+  # Update version with timestamp
+  update-version:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.set-version.outputs.version }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: 3.x
+      - name: Install dependencies
+        run: pip install tomli
+      - name: Update version with timestamp
+        id: update-version
+        run: |
+          python resources/update_python_version.py
+          # Get the updated version from Cargo.toml
+          VERSION=$(grep -m 1 'version =' py-phylo2vec/Cargo.toml | sed 's/version = "\(.*\)"/\1/')
+          echo "Updated version to $VERSION"
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+      - name: Set version output
+        id: set-version
+        run: echo "version=${{ steps.update-version.outputs.version }}" >> $GITHUB_OUTPUT
+
   linux:
+    needs: update-version
     runs-on: ${{ matrix.platform.runner }}
     strategy:
       matrix:
@@ -53,6 +78,7 @@ jobs:
           path: dist
 
   musllinux:
+    needs: update-version
     runs-on: ${{ matrix.platform.runner }}
     strategy:
       matrix:
@@ -84,6 +110,7 @@ jobs:
           path: dist
 
   windows:
+    needs: update-version
     runs-on: ${{ matrix.platform.runner }}
     strategy:
       matrix:
@@ -111,6 +138,7 @@ jobs:
           path: dist
 
   macos:
+    needs: update-version
     runs-on: ${{ matrix.platform.runner }}
     strategy:
       matrix:
@@ -137,6 +165,7 @@ jobs:
           path: dist
 
   sdist:
+    needs: update-version
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
