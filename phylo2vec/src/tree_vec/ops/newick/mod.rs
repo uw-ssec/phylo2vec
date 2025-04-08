@@ -1,3 +1,5 @@
+use std::num::IntErrorKind;
+
 use crate::tree_vec::types::Ancestry;
 
 mod newick_patterns;
@@ -47,6 +49,79 @@ fn _get_cherries_recursive_inner(ancestry: &mut Ancestry, newick: &str, has_pare
 
             return _get_cherries_recursive_inner(ancestry, &new_newick, has_parents);
         }
+    }
+}
+
+fn stoi_substr(s: &str, start: usize, end: &mut usize) -> Result<usize, IntErrorKind> {
+    let s = &s[start..];
+    let mut value = 0;
+    for (i, c) in s.chars().enumerate() {
+        if let Some(digit) = c.to_digit(10) {
+            value = value * 10 + digit as usize;
+            *end = start + i + 1;
+        } else {
+            break;
+        }
+    }
+    if *end > start {
+        Ok(value)
+    } else {
+        Err(std::num::IntErrorKind::Empty)
+    }
+}
+
+fn _get_cherries(ancestry: &mut Ancestry, newick: &str) {
+    let mut stack = Vec::new();
+    let mut i = 0;
+
+    while i < newick.len() {
+        let c = newick.as_bytes()[i] as char;
+        if c == ')' {
+            i += 1;
+
+            let c2 = stack.pop().unwrap();
+            let c1 = stack.pop().unwrap();
+
+            let mut end = 0;
+            let p = stoi_substr(newick, i, &mut end).expect("Bad input");
+            i = end - 1;
+
+            ancestry.push([c1, c2, p]);
+            stack.push(p);
+        } else if c.is_ascii_digit() {
+            let mut end = 0;
+            let node = stoi_substr(newick, i, &mut end).expect("Bad input");
+            stack.push(node);
+            i = end - 1;
+        }
+        i += 1;
+    }
+}
+
+fn _get_cherries_no_parents(ancestry: &mut Ancestry, newick: &str) {
+    let newick_length = newick.len();
+    let mut stack = Vec::with_capacity(newick_length);
+    let mut i = 0;
+
+    while i < newick_length {
+        let c = newick.as_bytes()[i] as char;
+
+        if c == ')' {
+            let c2 = stack.pop().unwrap();
+            let c1 = stack.pop().unwrap();
+
+            let c_max = std::cmp::max(c1, c2);
+            ancestry.push([c1, c2, c_max]);
+
+            let c_min = std::cmp::min(c1, c2);
+            stack.push(c_min);
+        } else if c.is_ascii_digit() {
+            let mut end = 0;
+            let leaf = stoi_substr(newick, i, &mut end).expect("Bad input");
+            stack.push(leaf);
+            i = end - 1;
+        }
+        i += 1;
     }
 }
 
@@ -144,7 +219,7 @@ pub fn get_cherries(newick: &str) -> Ancestry {
         return Vec::new(); // Return empty ancestry and branch length vectors
     }
     let mut ancestry: Ancestry = Vec::new();
-    _get_cherries_recursive_inner(&mut ancestry, &newick[..newick.len() - 1], true);
+    _get_cherries(&mut ancestry, &newick[..newick.len() - 1]);
     ancestry
 }
 
@@ -168,7 +243,7 @@ pub fn get_cherries_no_parents(newick: &str) -> Ancestry {
         return Vec::new(); // Return empty ancestry and branch length vectors
     }
     let mut ancestry: Ancestry = Vec::new();
-    _get_cherries_recursive_inner(&mut ancestry, &newick[..newick.len() - 1], false);
+    _get_cherries_no_parents(&mut ancestry, &newick[..newick.len() - 1]);
     ancestry
 }
 
