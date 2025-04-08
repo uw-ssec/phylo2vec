@@ -71,7 +71,7 @@ fn _get_cherries_no_parents_inner(ancestry: &mut Ancestry, newick: &str) {
             stack.push(c_min);
         } else if c.is_ascii_digit() {
             let mut end = 0;
-            let leaf = stoi_substr(newick, i, &mut end).expect("Bad input");
+            let leaf = _stoi_substr(newick, i, &mut end).expect("Bad input");
             stack.push(leaf);
             i = end - 1;
         }
