@@ -1,6 +1,6 @@
-
 import sys
 import datetime
+import os
 from pathlib import Path
 
 try:
@@ -130,6 +130,40 @@ def generate_version_with_timestamp(base_version: str) -> str:
     return f"{base_version}.dev{timestamp}"
 
 
+def extract_and_print_version(cargo_path: Path) -> str:
+    """
+    Extract the version from the Cargo.toml file and print it to stdout.
+    This is cross-platform compatible (works on Windows, macOS, Linux).
+
+    Parameters
+    ----------
+    cargo_path : Path
+        Path to the Cargo.toml file
+
+    Returns
+    -------
+    str
+        The current version string
+    """
+    try:
+        version = get_current_version(cargo_path)
+        print(f"Current version: {version}")
+
+        # For GitHub Actions: set as output
+        if 'GITHUB_OUTPUT' in os.environ:
+            with open(os.environ['GITHUB_OUTPUT'], 'a') as f:
+                f.write(f"version={version}\n")
+
+        # For regular environments: set an environment variable
+        os.environ['PHYLO2VEC_VERSION'] = version
+        print(f"Set environment variable PHYLO2VEC_VERSION={version}")
+
+        return version
+    except Exception as e:
+        print(f"Error extracting version: {e}")
+        return None
+
+
 def main():
     """
     Main function to update the version in Cargo.toml file.
@@ -153,11 +187,18 @@ def main():
     - With argument: python update_python_version.py NEW_VERSION
     - Without argument: python update_python_version.py
       (will generate version based on current version + timestamp)
+    - With --extract-only: python update_python_version.py --extract-only
+      (will only extract and print the version, without modifying the file)
     """
     cargo_path = Path(__file__).parents[1] / "py-phylo2vec" / "Cargo.toml"
 
     try:
-        if len(sys.argv) > 1:
+        # Check if the user just wants to extract the version
+        if len(sys.argv) > 1 and sys.argv[1] == "--extract-only":
+            extract_and_print_version(cargo_path)
+            return
+
+        if len(sys.argv) > 1 and sys.argv[1] != "--extract-only":
             # Use provided version
             new_version = sys.argv[1]
         else:
@@ -168,6 +209,10 @@ def main():
 
         # Update the version in the Cargo.toml file
         update_cargo_version(cargo_path, new_version)
+
+        # Extract and output the updated version
+        extract_and_print_version(cargo_path)
+
     except Exception as e:
         print(f"Error: {e}")
         sys.exit(1)
