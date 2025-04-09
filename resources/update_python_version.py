@@ -168,7 +168,7 @@ def get_distance_from_version_tag(version_str):
         tag_prefix = f"v{base_version}"
 
         # First check if the tag exists
-        result = subprocess.run(['git', 'tag', '-l', tag_prefix],
+        result = subprocess.run(['git', 'tag', '-l', tag_prefix],  # skipcq: BAN-B607
                                capture_output=True, text=True, check=True)
 
         if not result.stdout.strip():
@@ -176,7 +176,7 @@ def get_distance_from_version_tag(version_str):
             return "0"  # Return 0 if no tag found
 
         # Get the distance from tag to HEAD
-        result = subprocess.run(['git', 'rev-list', f'{tag_prefix}..HEAD', '--count'],
+        result = subprocess.run(['git', 'rev-list', f'{tag_prefix}..HEAD', '--count'],  # skipcq: BAN-B607
                                capture_output=True, text=True, check=True)
         distance = result.stdout.strip()
         return distance
