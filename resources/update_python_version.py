@@ -1,6 +1,8 @@
 import sys
 import datetime
 import os
+import subprocess
+import re
 from pathlib import Path
 
 try:
@@ -106,9 +108,74 @@ def get_current_version(cargo_path: Path) -> str:
         raise ValueError(f"Failed to parse TOML file: {e}")
 
 
-def generate_version_with_timestamp(base_version: str) -> str:
+def increment_patch_version(version_str: str) -> str:
     """
-    Generate a new version string by appending the current date and time to the base version.
+    Increment the patch version of a semver string.
+
+    Parameters
+    ----------
+    version_str : str
+        Version string in format 'major.minor.patch' or with additional suffixes
+
+    Returns
+    -------
+    str
+        Version with incremented patch number
+    """
+    # Extract the base version (remove any suffixes like -rc.xxx or .devxxx)
+    base_version = re.match(r'(\d+\.\d+\.\d+)', version_str).group(1)
+
+    if not base_version:
+        print(f"Warning: Could not parse version string '{version_str}'")
+        return version_str
+
+    # Split into major, minor, patch
+    parts = base_version.split('.')
+    if len(parts) != 3:
+        print(f"Warning: Version '{base_version}' doesn't follow semver major.minor.patch format")
+        return version_str
+
+    # Increment patch version
+    try:
+        major, minor, patch = parts
+        new_patch = int(patch) + 1
+        return f"{major}.{minor}.{new_patch}"
+    except (ValueError, IndexError) as e:
+        print(f"Warning: Failed to increment patch version: {e}")
+        return version_str
+
+
+def get_commit_hash(short=True):
+    """
+    Get the current git commit hash.
+
+    Parameters
+    ----------
+    short : bool, default=True
+        Whether to return the short (7 character) version of the hash
+
+    Returns
+    -------
+    str
+        The commit hash, or an empty string if git command fails
+    """
+    try:
+        if short:
+            result = subprocess.run(['git', 'rev-parse', '--short=7', 'HEAD'],
+                                   capture_output=True, text=True, check=True)
+        else:
+            result = subprocess.run(['git', 'rev-parse', 'HEAD'],
+                                   capture_output=True, text=True, check=True)
+        return result.stdout.strip()
+    except (subprocess.SubprocessError, FileNotFoundError):
+        print("Warning: Could not retrieve git commit hash")
+        return ""
+
+
+def generate_version_with_commit_hash(base_version: str) -> str:
+    """
+    Generate a new version string by incrementing the patch version and
+    appending the current git commit hash.
 
     Parameters
     ----------
@@ -118,16 +185,18 @@ def generate_version_with_timestamp(base_version: str) -> str:
     Returns
     -------
     str
-        New version string with timestamp (e.g., '0.1.12.dev202504071437')
+        New version string with incremented patch and commit hash (e.g., '0.1.13-rc.a1b2c3d')
     """
-    now = datetime.datetime.now()
-    timestamp = now.strftime("%Y%m%d%H%M")  # Format: YYYYMMDDHHMM (up to minute)
+    # Clean the base version first (remove any existing rc or dev tags)
+    if '-rc.' in base_version:
+        base_version = base_version.split('-rc.')[0]
 
-    # Remove any existing dev version if present
-    if '.dev' in base_version:
-        base_version = base_version.split('.dev')[0]
+    # Increment the patch version
+    incremented_version = increment_patch_version(base_version)
 
-    return f"{base_version}.dev{timestamp}"
+    # Add the commit hash
+    commit_hash = get_commit_hash(short=True)
+    return f"{incremented_version}-rc.{commit_hash}" if commit_hash else incremented_version
 
 
 def extract_and_print_version(cargo_path: Path) -> str:
@@ -169,7 +238,7 @@ def main():
     Main function to update the version in Cargo.toml file.
 
     This function can either use a provided version from command line arguments,
-    or generate a new version based on the current version plus timestamp.
+    or generate a new version based on the current version plus commit hash.
 
     Parameters
     ----------
@@ -186,7 +255,7 @@ def main():
     Usage:
     - With argument: python update_python_version.py NEW_VERSION
     - Without argument: python update_python_version.py
-      (will generate version based on current version + timestamp)
+      (will generate version based on current version + commit hash)
     - With --extract-only: python update_python_version.py --extract-only
       (will only extract and print the version, without modifying the file)
     """
@@ -202,9 +271,9 @@ def main():
             # Use provided version
             new_version = sys.argv[1]
         else:
-            # Generate version with timestamp
+            # Generate version with commit hash
             current_version = get_current_version(cargo_path)
-            new_version = generate_version_with_timestamp(current_version)
+            new_version = generate_version_with_commit_hash(current_version)
             print(f"Generated new version: {new_version}")
 
         # Update the version in the Cargo.toml file
