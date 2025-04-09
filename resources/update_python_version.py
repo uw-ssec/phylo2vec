@@ -145,37 +145,51 @@ def increment_patch_version(version_str: str) -> str:
         return version_str
 
 
-def get_commit_hash(short=True):
+def get_distance_from_version_tag(version_str):
     """
-    Get the current git commit hash.
+    Get the distance (number of commits) from the tag matching the current version.
 
     Parameters
     ----------
-    short : bool, default=True
-        Whether to return the short (7 character) version of the hash
+    version_str : str
+        The current version string to find matching tag
 
     Returns
     -------
     str
-        The commit hash, or an empty string if git command fails
+        The distance from the tag, or an empty string if git command fails
     """
     try:
-        if short:
-            result = subprocess.run(['git', 'rev-parse', '--short=7', 'HEAD'],
-                                   capture_output=True, text=True, check=True)
-        else:
-            result = subprocess.run(['git', 'rev-parse', 'HEAD'],
-                                   capture_output=True, text=True, check=True)
-        return result.stdout.strip()
+        # Clean version string for tag matching (remove any -rc. suffix)
+        base_version = version_str
+        if '-rc.' in base_version:
+            base_version = base_version.split('-rc.')[0]
+
+        # Format for tag search
+        tag_prefix = f"v{base_version}"
+
+        # First check if the tag exists
+        result = subprocess.run(['git', 'tag', '-l', tag_prefix],
+                               capture_output=True, text=True, check=True)
+
+        if not result.stdout.strip():
+            print(f"Warning: No tag found matching '{tag_prefix}'")
+            return "0"  # Return 0 if no tag found
+
+        # Get the distance from tag to HEAD
+        result = subprocess.run(['git', 'rev-list', f'{tag_prefix}..HEAD', '--count'],
+                               capture_output=True, text=True, check=True)
+        distance = result.stdout.strip()
+        return distance
     except (subprocess.SubprocessError, FileNotFoundError):
-        print("Warning: Could not retrieve git commit hash")
-        return ""
+        print("Warning: Could not calculate distance from version tag")
+        return "0"  # Default to 0 if there's an error
 
 
-def generate_version_with_commit_hash(base_version: str) -> str:
+def generate_version_with_distance(base_version: str) -> str:
     """
     Generate a new version string by incrementing the patch version and
-    appending the current git commit hash.
+    appending the distance from the current version tag.
 
     Parameters
     ----------
@@ -185,7 +199,8 @@ def generate_version_with_commit_hash(base_version: str) -> str:
     Returns
     -------
     str
-        New version string with incremented patch and commit hash (e.g., '0.1.13-rc.a1b2c3d')
+        New version string with incremented patch and tag distance (e.g., '0.1.13-rc.5')
+        where 5 is the number of commits since the tag matching base_version
     """
     # Clean the base version first (remove any existing rc or dev tags)
     if '-rc.' in base_version:
@@ -194,9 +209,9 @@ def generate_version_with_commit_hash(base_version: str) -> str:
     # Increment the patch version
     incremented_version = increment_patch_version(base_version)
 
-    # Add the commit hash
-    commit_hash = get_commit_hash(short=True)
-    return f"{incremented_version}-rc.{commit_hash}" if commit_hash else incremented_version
+    # Add the distance from version tag
+    distance = get_distance_from_version_tag(base_version)
+    return f"{incremented_version}-rc.{distance}" if distance else incremented_version
 
 
 def extract_and_print_version(cargo_path: Path) -> str:
@@ -238,7 +253,7 @@ def main():
     Main function to update the version in Cargo.toml file.
 
     This function can either use a provided version from command line arguments,
-    or generate a new version based on the current version plus commit hash.
+    or generate a new version based on the current version plus distance from tag.
 
     Parameters
     ----------
@@ -255,7 +270,7 @@ def main():
     Usage:
     - With argument: python update_python_version.py NEW_VERSION
     - Without argument: python update_python_version.py
-      (will generate version based on current version + commit hash)
+      (will generate version based on current version + tag distance)
     - With --extract-only: python update_python_version.py --extract-only
       (will only extract and print the version, without modifying the file)
     """
@@ -271,9 +286,9 @@ def main():
             # Use provided version
             new_version = sys.argv[1]
         else:
-            # Generate version with commit hash
+            # Generate version with distance from version tag
             current_version = get_current_version(cargo_path)
-            new_version = generate_version_with_commit_hash(current_version)
+            new_version = generate_version_with_distance(current_version)
             print(f"Generated new version: {new_version}")
 
         # Update the version in the Cargo.toml file
