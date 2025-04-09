@@ -214,7 +214,7 @@ def generate_version_with_distance(base_version: str) -> str:
     return f"{incremented_version}-rc.{distance}" if distance else incremented_version
 
 
-def extract_and_print_version(cargo_path: Path) -> str:
+def extract_and_print_version(cargo_path: Path) -> str | None:
     """
     Extract the version from the Cargo.toml file and print it to stdout.
     This is cross-platform compatible (works on Windows, macOS, Linux).
