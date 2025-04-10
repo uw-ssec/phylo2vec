@@ -122,11 +122,6 @@ jobs:
         uses: r-lib/actions/setup-r@v2
         with:
           r-version: release
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: |
-            any::devtools
-            any::remotes
       - name: Upload to GitHub release
         if: "startsWith(github.ref, 'refs/tags/')"
         uses: softprops/action-gh-release@v1
@@ -153,11 +148,6 @@ jobs:
         uses: r-lib/actions/setup-r@v2
         with:
           r-version: release
-      - uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          extra-packages: |
-            any::devtools
-            any::remotes
       - name: Install and test package
         run: |
           Rscript -e "pkg_file <- list.files('r-package-linux', full.names = TRUE)[1]; install.packages(pkg_file, repos = NULL, type = 'source')"
