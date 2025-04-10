@@ -36,7 +36,7 @@ jobs:
       - name: Build R package
         run: |
           Rscript -e "rextendr::document('${{ env.R_PACKAGE_DIR }}')"
-          Rscript -e "devtools::build('${{ env.R_PACKAGE_DIR }}', dest_path = 'dist')"
+          Rscript -e "devtools::build('${{ env.R_PACKAGE_DIR }}', path = 'dist')"
       - name: Upload package
         uses: actions/upload-artifact@v4
         with:
@@ -68,7 +68,7 @@ jobs:
       - name: Build R package
         run: |
           Rscript -e "rextendr::document('${{ env.R_PACKAGE_DIR }}')"
-          Rscript -e "devtools::build('${{ env.R_PACKAGE_DIR }}', dest_path = 'dist')"
+          Rscript -e "devtools::build('${{ env.R_PACKAGE_DIR }}', path = 'dist')"
       - name: Upload package
         uses: actions/upload-artifact@v4
         with:
@@ -92,7 +92,7 @@ jobs:
       - name: Build R package
         run: |
           Rscript -e "rextendr::document('${{ env.R_PACKAGE_DIR }}')"
-          Rscript -e "devtools::build('${{ env.R_PACKAGE_DIR }}', dest_path = 'dist')"
+          Rscript -e "devtools::build('${{ env.R_PACKAGE_DIR }}', path = 'dist')"
       - name: Upload package
         uses: actions/upload-artifact@v4
         with:
