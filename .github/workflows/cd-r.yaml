@@ -124,7 +124,6 @@ jobs:
           r-version: release
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          working-directory: ${{ env.R_PACKAGE_DIR }}
           extra-packages: |
             any::devtools
             any::remotes
@@ -156,7 +155,6 @@ jobs:
           r-version: release
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          working-directory: ${{ env.R_PACKAGE_DIR }}
           extra-packages: |
             any::devtools
             any::remotes
