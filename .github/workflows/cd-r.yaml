@@ -37,12 +37,12 @@ jobs:
         run: |
           mkdir dist
           Rscript -e "rextendr::document('${{ env.R_PACKAGE_DIR }}')"
-          Rscript -e "devtools::build('${{ env.R_PACKAGE_DIR }}', path = 'dist')"
+          Rscript -e "devtools::build('${{ env.R_PACKAGE_DIR }}', binary = TRUE, path = 'dist')"
       - name: Upload package
         uses: actions/upload-artifact@v4
         with:
           name: r-package-windows
-          path: dist/*.tar.gz
+          path: dist/*.zip
 
   build-macos:
     runs-on: ${{ matrix.platform.runner }}
@@ -70,7 +70,7 @@ jobs:
         run: |
           mkdir -p dist
           Rscript -e "rextendr::document('${{ env.R_PACKAGE_DIR }}')"
-          Rscript -e "devtools::build('${{ env.R_PACKAGE_DIR }}', path = 'dist')"
+          Rscript -e "devtools::build('${{ env.R_PACKAGE_DIR }}', binary = TRUE, path = 'dist')"
       - name: Upload package
         uses: actions/upload-artifact@v4
         with:
@@ -95,7 +95,7 @@ jobs:
         run: |
           mkdir -p dist
           Rscript -e "rextendr::document('${{ env.R_PACKAGE_DIR }}')"
-          Rscript -e "devtools::build('${{ env.R_PACKAGE_DIR }}', path = 'dist')"
+          Rscript -e "devtools::build('${{ env.R_PACKAGE_DIR }}', binary = TRUE, path = 'dist')"
       - name: Upload package
         uses: actions/upload-artifact@v4
         with:
