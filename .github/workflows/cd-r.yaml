@@ -30,9 +30,13 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           working-directory: ${{ env.R_PACKAGE_DIR }}
+          extra-packages: |
+            any::devtools
+            any::rextendr
       - name: Build R package
         run: |
-          Rscript -e "pkgbuild::build('${{ env.R_PACKAGE_DIR }}', dest_path = 'dist')"
+          Rscript -e "rextendr::document('${{ env.R_PACKAGE_DIR }}')"
+          Rscript -e "devtools::build('${{ env.R_PACKAGE_DIR }}', dest_path = 'dist')"
       - name: Upload package
         uses: actions/upload-artifact@v4
         with:
@@ -58,9 +62,13 @@ jobs:
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
           working-directory: ${{ env.R_PACKAGE_DIR }}
+          extra-packages: |
+            any::devtools
+            any::rextendr
       - name: Build R package
         run: |
-          Rscript -e "pkgbuild::build('${{ env.R_PACKAGE_DIR }}', dest_path = 'dist')"
+          Rscript -e "rextendr::document('${{ env.R_PACKAGE_DIR }}')"
+          Rscript -e "devtools::build('${{ env.R_PACKAGE_DIR }}', dest_path = 'dist')"
       - name: Upload package
         uses: actions/upload-artifact@v4
         with:
@@ -75,17 +83,16 @@ jobs:
       - uses: actions/checkout@v4
         with:
           fetch-depth: 0
-      - name: Install system dependencies
-        run: |
-          apt-get update && apt-get install -y libcurl4-openssl-dev libssl-dev libxml2-dev
-      - name: Install R dependencies
-        run: |
-          Rscript -e "install.packages(c('pkgbuild', 'remotes'))"
-          Rscript -e "remotes::install_deps('${{ env.R_PACKAGE_DIR }}')"
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          working-directory: ${{ env.R_PACKAGE_DIR }}
+          extra-packages: |
+            any::devtools
+            any::rextendr
       - name: Build R package
         run: |
-          mkdir -p dist
-          Rscript -e "pkgbuild::build('${{ env.R_PACKAGE_DIR }}', dest_path = 'dist')"
+          Rscript -e "rextendr::document('${{ env.R_PACKAGE_DIR }}')"
+          Rscript -e "devtools::build('${{ env.R_PACKAGE_DIR }}', dest_path = 'dist')"
       - name: Upload package
         uses: actions/upload-artifact@v4
         with:
@@ -112,9 +119,12 @@ jobs:
         uses: r-lib/actions/setup-r@v2
         with:
           r-version: release
-      - name: Install required packages
-        run: |
-          Rscript -e "install.packages(c('remotes', 'devtools'))"
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          working-directory: ${{ env.R_PACKAGE_DIR }}
+          extra-packages: |
+            any::devtools
+            any::remotes
       - name: Upload to GitHub release
         if: "startsWith(github.ref, 'refs/tags/')"
         uses: softprops/action-gh-release@v1
@@ -141,8 +151,13 @@ jobs:
         uses: r-lib/actions/setup-r@v2
         with:
           r-version: release
+      - uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          working-directory: ${{ env.R_PACKAGE_DIR }}
+          extra-packages: |
+            any::devtools
+            any::remotes
       - name: Install and test package
         run: |
-          Rscript -e "install.packages(c('remotes', 'devtools'))"
           Rscript -e "pkg_file <- list.files('r-package-linux', full.names = TRUE)[1]; install.packages(pkg_file, repos = NULL, type = 'source')"
-          Rscript -e "library(phylo2vec); print('Package loaded successfully')"
+          Rscript -e "library(phylo2vec); sample(5, FALSE); print('Package loaded successfully')"
