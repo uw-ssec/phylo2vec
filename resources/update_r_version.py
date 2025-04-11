@@ -34,7 +34,7 @@ def update_r_version(description_path: Path, new_version: str) -> None:
     content = description_path.read_text()
 
     # Find the current version line
-    version_pattern = re.compile(r'^Version:\s*([\d\.]+(?:-rc\.\d+)?)', re.MULTILINE)
+    version_pattern = re.compile(r'^Version:\s*([\d\.]+)', re.MULTILINE)
     match = version_pattern.search(content)
 
     if not match:
@@ -82,7 +82,7 @@ def get_current_version(description_path: Path) -> str:
     content = description_path.read_text()
 
     # Find the current version line
-    version_pattern = re.compile(r'^Version:\s*([\d\.]+(?:-rc\.\d+)?)', re.MULTILINE)
+    version_pattern = re.compile(r'^Version:\s*([\d\.]+)', re.MULTILINE)
     match = version_pattern.search(content)
 
     if not match:
@@ -98,15 +98,15 @@ def increment_patch_version(version_str: str) -> str:
     Parameters
     ----------
     version_str : str
-        Version string in format 'major.minor.patch' or with additional suffixes
+        Version string in format 'major.minor.patch[.distance]'
 
     Returns
     -------
     str
         Version with incremented patch number
     """
-    # Extract the base version (remove any suffixes like -rc.xxx or .devxxx)
-    base_version = re.match(r'(\d+\.\d+\.\d+)', version_str).group(1)
+    # Extract the base version (remove any fourth digit if it exists)
+    base_version = re.match(r'(\d+\.\d+\.\d+)(?:\.\d+)?', version_str).group(1)
 
     if not base_version:
         print(f"Warning: Could not parse version string '{version_str}'")
@@ -143,10 +143,12 @@ def get_distance_from_version_tag(version_str):
         The distance from the tag, or an empty string if git command fails
     """
     try:
-        # Clean version string for tag matching (remove any -rc. suffix)
-        base_version = version_str
-        if '-rc.' in base_version:
-            base_version = base_version.split('-rc.')[0]
+        # Clean version string for tag matching (remove any fourth digit if it exists)
+        base_parts = version_str.split('.')
+        if len(base_parts) > 3:
+            base_version = '.'.join(base_parts[:3])
+        else:
+            base_version = version_str
 
         # Format for tag search
         tag_prefix = f"v{base_version}"
@@ -172,29 +174,31 @@ def get_distance_from_version_tag(version_str):
 def generate_version_with_distance(base_version: str) -> str:
     """
     Generate a new version string by incrementing the patch version and
-    appending the distance from the current version tag.
+    appending the distance from the current version tag as a fourth digit.
 
     Parameters
     ----------
     base_version : str
-        Base version string (e.g., '0.1.12')
+        Base version string (e.g., '0.1.12' or '0.1.12.5')
 
     Returns
     -------
     str
-        New version string with incremented patch and tag distance (e.g., '0.1.13-rc.5')
-        where 5 is the number of commits since the tag matching base_version
+        New version string with incremented patch and tag distance as fourth digit
+        (e.g., '0.1.13.5') where 5 is the number of commits since the tag matching
+        the original base version
     """
-    # Clean the base version first (remove any existing rc or dev tags)
-    if '-rc.' in base_version:
-        base_version = base_version.split('-rc.')[0]
+    # Clean the base version first (remove any existing fourth digit)
+    base_parts = base_version.split('.')
+    if len(base_parts) > 3:
+        base_version = '.'.join(base_parts[:3])
 
     # Increment the patch version
     incremented_version = increment_patch_version(base_version)
 
-    # Add the distance from version tag
+    # Add the distance from version tag as the fourth digit
     distance = get_distance_from_version_tag(base_version)
-    return f"{incremented_version}-rc.{distance}" if distance else incremented_version
+    return f"{incremented_version}.{distance}" if distance else incremented_version
 
 
 def extract_and_print_version(description_path: Path) -> str | None:
