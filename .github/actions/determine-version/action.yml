@@ -7,6 +7,10 @@ inputs:
   github_ref:
     description: 'The GitHub ref that triggered the workflow (for extracting tag version)'
     required: true
+  language:
+    description: 'The programming language package to update (python or r)'
+    required: true
+    default: 'python'
 outputs:
   version:
     description: 'The determined version'
@@ -28,9 +32,20 @@ runs:
           VERSION=${TAG_VERSION#v}
           echo "Version from release tag: $VERSION"
 
-          # Use the update_python_version.py script with the release version
-          python resources/update_python_version.py $VERSION
+          # Use the appropriate update script with the release version based on language
+          if [ "${{ inputs.language }}" == "r" ]; then
+            python resources/update_r_version.py $VERSION
+          else
+            python resources/update_python_version.py $VERSION
+          fi
         else
           # Run the script without parameters to use timestamp versioning
-          python resources/update_python_version.py
+          if [ "${{ inputs.language }}" == "r" ]; then
+            python resources/update_r_version.py
+          else
+            python resources/update_python_version.py
+          fi
         fi
+
+        # Set the version as an output that can be used by other steps
+        echo "version=$VERSION" >> $GITHUB_OUTPUT
