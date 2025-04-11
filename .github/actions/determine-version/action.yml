@@ -33,8 +33,12 @@ runs:
           echo "Version from release tag: $VERSION"
 
           # Use the appropriate update script with the release version based on language
+          # If the language is R, then just read the version from the DESCRIPTION file,
+          # this should be updated by the release process manually
           if [ "${{ inputs.language }}" == "r" ]; then
-            python resources/update_r_version.py $VERSION
+            # Read the version from the DESCRIPTION file
+            VERSION=$(grep -E '^Version:' r-phylo2vec/DESCRIPTION | awk '{print $2}')
+            echo "Version from DESCRIPTION file: $VERSION"
           else
             python resources/update_python_version.py $VERSION
           fi
