@@ -27,7 +27,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.x'
       - name: Determine Version
         uses: ./.github/actions/determine-version
         id: determine-version
@@ -71,7 +71,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.x'
       - name: Determine Version
         uses: ./.github/actions/determine-version
         id: determine-version
@@ -101,8 +101,6 @@ jobs:
 
   build-linux:
     runs-on: ubuntu-latest
-    container:
-      image: r-base:latest
     steps:
       - uses: actions/checkout@v4
         with:
@@ -110,7 +108,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.x'
       - name: Determine Version
         uses: ./.github/actions/determine-version
         id: determine-version
