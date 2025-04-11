@@ -190,8 +190,12 @@ pub fn order_cherries(ancestry: &mut Ancestry) {
     }
 }
 
-pub fn order_cherries_no_parents(ancestry: &mut Ancestry) {
-    let num_cherries = ancestry.len();
+pub fn order_cherries_no_parents(cherries: &mut Ancestry) -> Vec<usize> {
+    let num_cherries = cherries.len();
+
+    let old_cherries: Vec<[usize; 3]> = cherries.clone();
+
+    let mut idxs: Vec<usize> = Vec::new();
 
     for i in 0..num_cherries {
         // Find the next index to process:
@@ -199,22 +203,24 @@ pub fn order_cherries_no_parents(ancestry: &mut Ancestry) {
         // where both leaves were previously un-visited
         // why? If a leaf in a cherry already appeared in the ancestry,
         // it means that leaf was already involved in a shallower cherry
-        let mut idx = usize::MAX;
+        let mut idx = num_cherries - 1;
 
         // Initially, all cherries have not been processed
         let mut unvisited = vec![true; num_cherries + 1];
 
         // Temporary max leaf
-        let mut max_leaf = 0;
+        let mut max_leaf: i32 = -1;
 
-        for j in i..num_cherries {
-            let [c1, c2, c_max] = ancestry[j];
+        for j in 0..num_cherries {
+            if idxs.contains(&j) {
+                continue;
+            }
 
-            if c_max > max_leaf {
-                if unvisited[c1] && unvisited[c2] {
-                    max_leaf = c_max;
-                    idx = j;
-                }
+            let [c1, c2, c_max] = old_cherries[j];
+
+            if unvisited[c1] && unvisited[c2] && c_max as i32 > max_leaf {
+                max_leaf = c_max as i32;
+                idx = j;
             }
 
             // c1 and c2 have been processed
@@ -222,10 +228,14 @@ pub fn order_cherries_no_parents(ancestry: &mut Ancestry) {
             unvisited[c2] = false;
         }
 
-        if idx != i {
-            ancestry[i..idx + 1].rotate_right(1);
-        }
+        // Swap the rows for the new ancestry
+        // row idx with row i
+        cherries[i] = old_cherries[idx];
+
+        idxs.push(idx);
     }
+
+    idxs
 }
 
 pub fn build_vector(cherries: &Ancestry) -> Vec<usize> {

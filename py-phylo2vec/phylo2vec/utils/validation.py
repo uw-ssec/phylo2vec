@@ -16,3 +16,20 @@ def check_v(v: np.ndarray) -> None:
         Phylo2Vec vector
     """
     _phylo2vec_core.check_v(v.tolist())
+
+
+def check_m(m):
+    """Input validation of a Phylo2Mat matrix
+
+    The input is checked for the Phylo2Vec constraints and positive branch lengths
+
+    Parameters
+    ----------
+    m : numpy.ndarray
+        Phylo2Mat matrix
+    """
+
+    check_v(m[:, 0])
+
+    if not np.all(m[:, 1:] > 0):
+        raise ValueError("All branch lengths must be positive")

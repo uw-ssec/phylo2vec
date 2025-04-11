@@ -10,7 +10,7 @@ from ete3 import Tree
 from phylo2vec.base.to_newick import _get_ancestry, to_newick
 from phylo2vec.base.to_vector import (
     _build_vector,
-    _find_cherries,
+    _order_cherries,
     to_vector,
 )
 from phylo2vec.utils.validation import check_v
@@ -63,7 +63,7 @@ def reorder_v(reorder_method, v_old, label_mapping_old):
     )
 
     # Re-build v
-    v_new = _build_vector(_find_cherries(ancestry_new))
+    v_new = _build_vector(_order_cherries(ancestry_new))
 
     return v_new, label_mapping_new
 
@@ -239,7 +239,6 @@ def _find_indices_of_first_leaf(ancestry, leaf):
                 return r, c
 
 
-
 def remove_leaf(v, leaf):
     """Remove a leaf from a Phylo2Vec v
 
@@ -260,7 +259,6 @@ def remove_leaf(v, leaf):
     return _phylo2vec_core.remove_leaf(v, leaf)
 
 
-
 def add_leaf(v, leaf, pos):
     """Add a leaf to a Phylo2Vec vector v
 
@@ -279,7 +277,6 @@ def add_leaf(v, leaf, pos):
         Phylo2Vec vector including the new leaf
     """
     return _phylo2vec_core.add_leaf(v, leaf, pos)
-
 
 
 def get_ancestry_paths(v):
@@ -310,7 +307,6 @@ def get_ancestry_paths(v):
         ancestry_paths.append(path)
 
     return ancestry_paths
-
 
 
 def get_common_ancestor(v, node1, node2):
