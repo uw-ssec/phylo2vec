@@ -10,12 +10,16 @@ license.workspace = true
 [dependencies]
 rand = "*"
 regex = "1.11.1"
+samply = "0.13.1"
 
 [dev-dependencies]
 rstest = "0.23.0"
 criterion = { version = "0.5", features = ["html_reports"] }
 ndarray = "*"
 
+[[bin]]
+name = "profile_main"
+path = "src/profile_main.rs"
 
 [[bench]]
 name = "bench_main"

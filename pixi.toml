@@ -28,6 +28,7 @@ build-release = "cargo build --release"
 start-release = "cargo run --release"
 open-doc = "cargo doc --open"
 benchmark = "cargo bench"
+profile = { cmd = "cargo build --profile profiling && samply record target/profiling/profile_main 100000"}
 
 # ======= CI Environments ==========
 [environments]
