@@ -37,22 +37,34 @@ runs:
           VERSION=${TAG_VERSION#v}
           echo "Version from release tag: $VERSION"
 
-          # Use the appropriate update script with the release version based on language
-          # If the language is R, then just read the version from the DESCRIPTION file,
-          # this should be updated by the release process manually
+          # Use the unified update script with the release version and language flag
           if [ "${{ inputs.language }}" == "r" ]; then
-            # Read the version from the DESCRIPTION file
-            VERSION=$(grep -E '^Version:' r-phylo2vec/DESCRIPTION | awk '{print $2}')
-            echo "Version from DESCRIPTION file: $VERSION"
+            python resources/update_version.py --r --version $VERSION
+            # Read the version from the DESCRIPTION file to ensure it's correct
+            ACTUAL_VERSION=$(python resources/update_version.py --r --extract-only | grep "Current R version" | sed 's/Current R version: //')
+            echo "R version set to: $ACTUAL_VERSION"
+            VERSION=$ACTUAL_VERSION
+          elif [ "${{ inputs.language }}" == "python" ]; then
+            python resources/update_version.py --python --version $VERSION
+            # Read the Python version to ensure it's correct
+            ACTUAL_VERSION=$(python resources/update_version.py --python --extract-only | grep "Current Python version" | sed 's/Current Python version: //')
+            echo "Python version set to: $ACTUAL_VERSION"
+            VERSION=$ACTUAL_VERSION
           else
-            python resources/update_python_version.py $VERSION
+            echo "Error: Invalid language specified. Must be 'python' or 'r'."
+            exit 1
           fi
         else
-          # Run the script without parameters to use timestamp versioning
+          # Run the script without parameters to use auto-version with git distance
           if [ "${{ inputs.language }}" == "r" ]; then
-            python resources/update_r_version.py
+            python resources/update_version.py --r
+            VERSION=$(python resources/update_version.py --r --extract-only | grep "Current R version" | sed 's/Current R version: //')
+          elif [ "${{ inputs.language }}" == "python" ]; then
+            python resources/update_version.py --python
+            VERSION=$(python resources/update_version.py --python --extract-only | grep "Current Python version" | sed 's/Current Python version: //')
           else
-            python resources/update_python_version.py
+            echo "Error: Invalid language specified. Must be 'python' or 'r'."
+            exit 1
           fi
         fi
 
