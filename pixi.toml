@@ -30,6 +30,7 @@ open-doc = "cargo doc --open"
 benchmark = "cargo bench"
 install-samply = "cargo install samply"
 profile = { cmd = "cargo build --profile profiling && samply record target/profiling/profile_main 100000", depends-on = ["install-samply"] }
+profile-save = { cmd = "cargo build --profile profiling && samply record --save-only target/profiling/profile_main 100000", depends-on = ["install-samply"] }
 
 # ======= CI Environments ==========
 [environments]
