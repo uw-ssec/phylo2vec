@@ -32,3 +32,12 @@ jobs:
         run: cargo build --verbose
       - name: Run tests
         run: cargo test --verbose
+  profile:
+    name: Rust code profile
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/upload-artifact@v4
+        with:
+          path: profile.json.gz
+      - uses: prefix-dev/setup-pixi@v0.8.1
+      - run: pixi run profile
