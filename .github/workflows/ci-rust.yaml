@@ -32,15 +32,3 @@ jobs:
         run: cargo build --verbose
       - name: Run tests
         run: cargo test --verbose
-  profile:
-    name: Rust code profile
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Set kernel parameter for perf_event_paranoid
-        run: sudo sh -c "echo 1 > /proc/sys/kernel/perf_event_paranoid"
-      - uses: prefix-dev/setup-pixi@v0.8.1
-      - run: pixi run profile-save
-      - uses: actions/upload-artifact@v4
-        with:
-          path: profile.json.gz
