@@ -91,4 +91,6 @@ fn _phylo2vec_core(m: &Bound<'_, PyModule>) -> PyResult<()> {
     // Metadata about the package bindings
     m.add("__version__", env!("CARGO_PKG_VERSION"))?;
     Ok(())
-}
+} // skipcq: RS-R1000
+// The line above raises an issue in DeepSource stating that this function's cyclomatic complexity is higher than threshold
+// the analyzer does not understand that this is an API exposure function, hence the comment above to skip over this occurrence. 
