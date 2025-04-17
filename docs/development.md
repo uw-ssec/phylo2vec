@@ -2,8 +2,7 @@
 
 ## How it works
 
-The core logic of `phylo2vec` is implemented in Rust. The Rust code is converted
-to several languages like Python and R using bindings. The main installable
+The core logic of `phylo2vec` is implemented in Rust. The Rust code is accessed by other languages like Python and R using bindings. The main installable
 Python package will contain a hybrid of native Python code and Rust bindings.
 The Rust code is compiled by `maturin` and `pyo3` into a shared library that is
 used by the Python package.
