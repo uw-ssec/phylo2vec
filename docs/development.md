@@ -72,14 +72,18 @@ Example Rust criterion benchmark output:
 ![Criterion benchmarks report](img/criterion.png)
 
 ## Code profiling
-You can also profile the Rust code using samply and locate bottlenecks. The main function being profiled by `pixi run profile` is located at `phylo2vec/src/profile_main.rs`. The function runs `to_newick` and `to_vector` with customizable n_leaves input sizes. You can run the following command to run the profile and view it in the interactive Mozilla Firefox profiler:
+
+You can also profile the Rust code using samply and locate bottlenecks. The main
+function being profiled by `pixi run profile` is located at
+`phylo2vec/src/profile_main.rs`. The function runs `to_newick` and `to_vector`
+with customizable n_leaves input sizes. You can run the following command to run
+the profile and view it in the interactive Mozilla Firefox profiler:
 
 ```console
 pixi run -e default profile
 ```
 
-Example profile output:
-![Samply profile report](img/profile.png)
+Example profile output: ![Samply profile report](img/profile.png)
 
 ## py-phylo2vec
 
