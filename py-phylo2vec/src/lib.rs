@@ -77,7 +77,8 @@ fn remove_leaf(mut input_vector: Vec<usize>, leaf: usize) -> (Vec<usize>, usize)
 /// The line below raises an issue in DeepSource stating that this function's cyclomatic complexity is higher than threshold
 /// the analyzer does not understand that this is an API exposure function, hence the comment above to skip over this occurrence.
 #[pymodule]
-fn _phylo2vec_core(m: &Bound<'_, PyModule>) -> PyResult<()> { // skipcq: RS-R1000
+fn _phylo2vec_core(m: &Bound<'_, PyModule>) -> PyResult<()> {
+    // skipcq: RS-R1000
     m.add_function(wrap_pyfunction!(to_newick_from_vector, m)?)?;
     m.add_function(wrap_pyfunction!(to_vector, m)?)?;
     m.add_function(wrap_pyfunction!(to_newick_from_matrix, m)?)?;
@@ -91,6 +92,6 @@ fn _phylo2vec_core(m: &Bound<'_, PyModule>) -> PyResult<()> { // skipcq: RS-R100
     m.add_function(wrap_pyfunction!(add_leaf, m)?)?;
     m.add_function(wrap_pyfunction!(remove_leaf, m)?)?;
     // Metadata about the package bindings
-    m.add("__version__", env!("CARGO_PKG_VERSION"))?; 
+    m.add("__version__", env!("CARGO_PKG_VERSION"))?;
     Ok(())
-} 
+}
