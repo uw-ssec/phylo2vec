@@ -61,12 +61,25 @@ pixi run -e r-phylo2vec test # R tests
 To run the benchmarking suite, you can run the following Pixi commands. Note
 that the Rust benchmarks use Criterion which also creates graphs for the
 benchmarks. The graphs are located in the `target/criterion` directory. Note
-that these operations can take several minutes to run.
+that these operations will take several minutes to run.
 
 ```console
 pixi run -e default benchmark # Rust benchmarks
 pixi run -e py-phylo2vec benchmark # Python benchmarks
 ```
+
+Example Rust criterion benchmark output:
+![Criterion benchmarks report](img/criterion.png)
+
+## Code profiling
+You can also profile the Rust code using samply and locate bottlenecks. The main function being profiled by `pixi run profile` is located at `phylo2vec/src/profile_main.rs`. The function runs `to_newick` and `to_vector` with customizable n_leaves input sizes. You can run the following command to run the profile and view it in the interactive Mozilla Firefox profiler:
+
+```console
+pixi run -e default profile
+```
+
+Example profile output:
+![Samply profile report](img/profile.png)
 
 ## py-phylo2vec
 
