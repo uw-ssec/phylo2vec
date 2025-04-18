@@ -20,28 +20,24 @@ fn _get_cherries_recursive_inner(ancestry: &mut Ancestry, newick: &str, has_pare
             let c2 = pairs[1];
             let parent: usize;
             let new_newick: String;
-            match has_parents {
+            if has_parents {
                 // For case that the newick string has parents
-                true => {
-                    parent = newick[i + 1..]
-                        .split(',')
-                        .next()
-                        .unwrap_or("")
-                        .split(')')
-                        .next()
-                        .unwrap_or("")
-                        .parse::<usize>()
-                        .unwrap();
-                    new_newick = format!("{}{}", &newick[..open_idx - 1], &newick[i + 1..]);
-                }
-                // For case that the newick string does not have parents
-                false => {
-                    parent = std::cmp::max(c1, c2);
-                    new_newick = newick.replace(
-                        &newick[open_idx - 1..i + 1],
-                        &std::cmp::min(c1, c2).to_string(),
-                    );
-                }
+                parent = newick[i + 1..]
+                    .split(',')
+                    .next()
+                    .unwrap_or("")
+                    .split(')')
+                    .next()
+                    .unwrap_or("")
+                    .parse::<usize>()
+                    .unwrap();
+                new_newick = format!("{}{}", &newick[..open_idx - 1], &newick[i + 1..]);
+            } else {
+                parent = std::cmp::max(c1, c2);
+                new_newick = newick.replace(
+                    &newick[open_idx - 1..=i],
+                    &std::cmp::min(c1, c2).to_string(),
+                );
             }
 
             ancestry.push([c1, c2, parent]);
@@ -371,11 +367,11 @@ mod tests {
         let newick = to_newick_from_vector(&v);
         // Check if the newick string has parents
         let result = has_parents(&newick);
-        assert_eq!(result, true);
+        assert_eq!(result, true); // skipcq: RS-W1024
 
         // Check if the newick string does not have parents
         let result_no_parents = has_parents(&remove_parent_labels(&newick));
-        assert_eq!(result_no_parents, false);
+        assert_eq!(result_no_parents, false); // skipcq: RS-W1024
     }
 
     #[rstest]
