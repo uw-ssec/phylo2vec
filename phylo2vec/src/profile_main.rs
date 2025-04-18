@@ -1,7 +1,5 @@
-use phylo2vec::{
-    tree_vec::ops::{to_newick, to_vector},
-    utils::sample_vector,
-};
+use phylo2vec::tree_vec::ops;
+use phylo2vec::utils;
 use std::env;
 
 const DEFAULT_N_LEAVES: usize = 100000;
@@ -13,8 +11,8 @@ fn main() {
     } else {
         DEFAULT_N_LEAVES
     };
-    let v = sample_vector(n_leaves, true);
-    let n = to_newick(&v);
-    let re_v = to_vector(&n);
+    let v = utils::sample_vector(n_leaves, true);
+    let n = ops::to_newick(&v);
+    let re_v = ops::to_vector(&n);
     println!("vector length: {:?}", re_v.len());
 }
