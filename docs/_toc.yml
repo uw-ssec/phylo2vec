@@ -6,7 +6,6 @@ root: README.md
 parts:
   - caption: Tutorials
     chapters:
-      - file: demo_matrix.ipynb
       - file: demo.ipynb
   - caption: Help and References
     chapters:
