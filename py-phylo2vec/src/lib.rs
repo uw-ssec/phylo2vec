@@ -73,7 +73,6 @@ fn remove_leaf(mut input_vector: Vec<usize>, leaf: usize) -> (Vec<usize>, usize)
     return ops::remove_leaf(&mut input_vector, leaf);
 }
 
-// skipcq: RS-R1000,
 /// This module is exposed to Python.
 /// The line below raises an issue in DeepSource stating that this function's cyclomatic complexity is higher than threshold
 /// the analyzer does not understand that this is an API exposure function, hence the comment above to skip over this occurrence.
