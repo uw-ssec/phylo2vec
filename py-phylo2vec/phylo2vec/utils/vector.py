@@ -10,7 +10,7 @@ from ete3 import Tree
 from phylo2vec.base.to_newick import _get_ancestry, to_newick
 from phylo2vec.base.to_vector import (
     _build_vector,
-    _find_cherries,
+    _order_cherries,
     to_vector,
 )
 from phylo2vec.utils.validation import check_v
@@ -63,7 +63,7 @@ def reorder_v(reorder_method, v_old, label_mapping_old):
     )
 
     # Re-build v
-    v_new = _build_vector(_find_cherries(ancestry_new))
+    v_new = _build_vector(_order_cherries(ancestry_new))
 
     return v_new, label_mapping_new
 
