@@ -1,5 +1,19 @@
 # Phylo2Vec
 
+[![PyPI version](https://badge.fury.io/py/phylo2vec.svg)](https://pypi.org/project/phylo2vec/)
+[![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://phylo2vec.readthedocs.io)
+[![DOI](https://zenodo.org/badge/710195598.svg)](https://zenodo.org/badge/latestdoi/710195598)
+
+<span><img src="https://img.shields.io/badge/SSEC-Project-purple?logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA0AAAAOCAQAAABedl5ZAAAACXBIWXMAAAHKAAABygHMtnUxAAAAGXRFWHRTb2Z0d2FyZQB3d3cuaW5rc2NhcGUub3Jnm+48GgAAAMNJREFUGBltwcEqwwEcAOAfc1F2sNsOTqSlNUopSv5jW1YzHHYY/6YtLa1Jy4mbl3Bz8QIeyKM4fMaUxr4vZnEpjWnmLMSYCysxTcddhF25+EvJia5hhCudULAePyRalvUteXIfBgYxJufRuaKuprKsbDjVUrUj40FNQ11PTzEmrCmrevPhRcVQai8m1PRVvOPZgX2JttWYsGhD3atbHWcyUqX4oqDtJkJiJHUYv+R1JbaNHJmP/+Q1HLu2GbNoSm3Ft0+Y1YMdPSTSwQAAAABJRU5ErkJggg==&style=plastic" /><span>
+![LGPL-3.0 License](https://badgen.net/badge/license/LGPL-3.0)
+
+<!-- [![Documentation Status](https://readthedocs.org/projects/phylo2vec/badge/?version=latest)](https://phylo2vec.readthedocs.io/en/latest/?badge=latest) -->
+
+[![pre-commit.ci status](https://results.pre-commit.ci/badge/github/sbhattlab/phylo2vec/main.svg)](https://results.pre-commit.ci/latest/github/sbhattlab/phylo2vec/main)
+[![CI Python](https://github.com/sbhattlab/phylo2vec/actions/workflows/ci-python.yml/badge.svg)](https://github.com/sbhattlab/phylo2vec/actions/workflows/ci-python.yml)
+[![CI Rust](https://github.com/sbhattlab/phylo2vec/actions/workflows/ci-rust.yaml/badge.svg)](https://github.com/sbhattlab/phylo2vec/actions/workflows/ci-rust.yaml)
+[![CI R](https://github.com/sbhattlab/phylo2vec/actions/workflows/ci-R.yml/badge.svg)](https://github.com/sbhattlab/phylo2vec/actions/workflows/ci-R.yml)
+
 Phylo2Vec is a high-performance software package for encoding, manipulating, and
 analyzing binary phylogenetic trees. At its core, the package contains
 representation of binary trees, which defines a bijection from any tree topology
@@ -13,9 +27,6 @@ available in Python (superseding the version described in the original paper
 ([Penn et al., 2024](https://doi.org/10.1093/sysbio/syae030))) and R via
 dedicated wrappers, making it accessible to a broad audience in the
 bioinformatics community.
-
-[![PyPI version](https://badge.fury.io/py/phylo2vec.svg)](https://pypi.org/project/phylo2vec/)
-[![Documentation](https://img.shields.io/badge/docs-latest-blue.svg)](https://phylo2vec.readthedocs.io)
 
 Link to the paper:
 [https://doi.org/10.1093/sysbio/syae030](https://doi.org/10.1093/sysbio/syae030)
@@ -59,7 +70,7 @@ in Rust.
 #### Installing R package
 
 To install the R package, first you need to retrieve one of the compiled file
-within the package [releases](https://github.com/uw-ssec/phylo2vec/releases).
+within the package [releases](https://github.com/sbhattlab/phylo2vec/releases).
 Once the file is downloaded, simply run `install.packages` in your R command
 line.
 
@@ -126,6 +137,10 @@ We welcome contributions to Phylo2Vec! Here's how you can help:
 
 Please make sure to follow our coding standards and write appropriate tests for
 new features.
+
+Thanks to our contributors so far!
+
+[![Contributors](https://contrib.rocks/image?repo=sbhattlab/phylo2vec)](https://github.com/sbhattlab/phylo2vec/graphs/contributors)
 
 ## License
 
