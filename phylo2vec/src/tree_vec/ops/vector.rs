@@ -1,9 +1,7 @@
 use crate::tree_vec::ops::avl::AVLTree;
-use crate::tree_vec::types::{Ancestry, Pair, PairsVec};
+use crate::tree_vec::types::{Ancestry, Pair, Pairs};
 use crate::utils::is_unordered;
-use core::num;
 use std::collections::HashMap;
-use std::usize;
 
 /// Get the pair of nodes from the Phylo2Vec vector
 /// using a vector data structure and for loops
@@ -16,9 +14,9 @@ use std::usize;
 /// let v = vec![0, 0, 0, 1, 3, 3, 1, 4, 4];
 /// let pairs = get_pairs(&v);
 /// ```
-pub fn get_pairs(v: &Vec<usize>) -> PairsVec {
+pub fn get_pairs(v: &Vec<usize>) -> Pairs {
     let num_of_leaves: usize = v.len();
-    let mut pairs: PairsVec = Vec::with_capacity(num_of_leaves);
+    let mut pairs: Pairs = Vec::with_capacity(num_of_leaves);
 
     // First loop (reverse iteration)
     for i in (0..num_of_leaves).rev() {
@@ -55,17 +53,7 @@ pub fn get_pairs(v: &Vec<usize>) -> PairsVec {
     pairs
 }
 
-/// Get the pair of nodes from the Phylo2Vec vector
-/// using an AVL tree data structure implementation.
-///
-/// # Example
-/// ```
-/// use phylo2vec::tree_vec::ops::vector::get_pairs_avl;
-///
-/// let v = vec![0, 0, 0, 1, 3, 3, 1, 4, 4];
-/// let pairs = get_pairs_avl(&v);
-/// ```
-pub fn get_pairs_avl(v: &Vec<usize>) -> PairsVec {
+pub fn make_avl_tree(v: &[usize]) -> AVLTree {
     // AVL tree implementation of get_pairs
     let k = v.len();
     let mut avl_tree = AVLTree::new();
@@ -82,6 +70,21 @@ pub fn get_pairs_avl(v: &Vec<usize>) -> PairsVec {
         }
     }
 
+    avl_tree
+}
+
+/// Get the pair of nodes from the Phylo2Vec vector
+/// using an AVL tree data structure implementation.
+///
+/// # Example
+/// ```
+/// use phylo2vec::tree_vec::ops::vector::get_pairs_avl;
+///
+/// let v = vec![0, 0, 0, 1, 3, 3, 1, 4, 4];
+/// let pairs = get_pairs_avl(&v);
+/// ```
+pub fn get_pairs_avl(v: &Vec<usize>) -> Pairs {
+    let avl_tree: AVLTree = make_avl_tree(v);
     avl_tree.get_pairs()
 }
 
@@ -102,7 +105,7 @@ pub fn get_pairs_avl(v: &Vec<usize>) -> PairsVec {
 ///
 /// v[1] = 2 is somewhat similar: we create a new branch from R that yields leaf 2
 pub fn get_ancestry(v: &Vec<usize>) -> Ancestry {
-    let pairs: PairsVec;
+    let pairs: Pairs;
 
     // Determine the implementation to use
     // based on whether this is an ordered

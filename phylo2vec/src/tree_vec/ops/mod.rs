@@ -3,21 +3,33 @@ pub mod matrix;
 pub mod newick;
 pub mod vector;
 
-use crate::{tree_vec::types::Ancestry, utils::check_m};
+use crate::{
+    tree_vec::types::{Ancestry, Pairs},
+    utils::{check_m, is_unordered},
+};
 use matrix::parse_matrix;
-use newick::build_newick_with_bls;
+use newick::build_newick_from_ancestry_with_bls;
 
 pub use vector::{
     build_vector, cophenetic_distances, find_coords_of_first_leaf, get_ancestry, get_pairs,
-    get_pairs_avl, order_cherries, order_cherries_no_parents,
+    get_pairs_avl, make_avl_tree, order_cherries, order_cherries_no_parents,
 };
 
-pub use newick::{build_newick, get_cherries, get_cherries_no_parents, has_parents};
+pub use newick::{
+    build_newick_from_ancestry, build_newick_from_pairs, get_cherries, get_cherries_no_parents,
+    has_parents,
+};
 
 /// Recover a rooted tree (in Newick format) from a Phylo2Vec vector
 pub fn to_newick_from_vector(v: &Vec<usize>) -> String {
-    let ancestry: Ancestry = get_ancestry(&v);
-    build_newick(&ancestry)
+    // // let ancestry: Ancestry = get_ancestry(&v);
+    // // build_newick(&ancestry)
+    let pairs: Pairs = match is_unordered(v) {
+        true => get_pairs_avl(v),
+        false => get_pairs(v),
+    };
+
+    build_newick_from_pairs(&pairs)
 }
 
 /// Recover a rooted tree (in Newick format) from a Phylo2Vec matrix
@@ -27,7 +39,7 @@ pub fn to_newick_from_matrix(m: &Vec<Vec<f32>>) -> String {
 
     let (v, bls) = parse_matrix(&m);
     let ancestry = get_ancestry(&v);
-    build_newick_with_bls(&ancestry, &bls)
+    build_newick_from_ancestry_with_bls(&ancestry, &bls)
 }
 
 /// Recover a Phylo2Vec vector from a rooted tree (in Newick format)

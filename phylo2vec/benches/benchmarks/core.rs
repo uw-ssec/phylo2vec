@@ -1,11 +1,10 @@
 use criterion::{criterion_group, BenchmarkId, Criterion};
 use phylo2vec::tree_vec::ops;
 use phylo2vec::utils::sample_vector;
-use std::ops::Range;
+use std::ops::RangeInclusive;
 use std::time::Duration;
 
-/// Input sizes for benchmarks (powers of 2)
-const SAMPLE_SIZES: Range<u32> = 8..20; // 2^8 to 2^19 (256 to 524288)
+const SAMPLE_SIZES: RangeInclusive<u32> = 1..=10;
 
 /// Benchmark to_newick with both ordered and unordered inputs
 fn bench_to_newick(c: &mut Criterion) {
@@ -16,7 +15,7 @@ fn bench_to_newick(c: &mut Criterion) {
     );
 
     for i in SAMPLE_SIZES {
-        let sample_size = 2_i32.checked_pow(i).unwrap() as usize;
+        let sample_size = 10000 * i as usize;
 
         // Benchmark ordered case
         group.bench_with_input(
@@ -25,7 +24,7 @@ fn bench_to_newick(c: &mut Criterion) {
             |b, &size| {
                 b.iter(|| {
                     let v = sample_vector(size, true);
-                    ops::to_newick(&v)
+                    ops::to_newick_from_vector(&v)
                 });
             },
         );
@@ -37,7 +36,7 @@ fn bench_to_newick(c: &mut Criterion) {
             |b, &size| {
                 b.iter(|| {
                     let v = sample_vector(size, false);
-                    ops::to_newick(&v)
+                    ops::to_newick_from_vector(&v)
                 });
             },
         );
@@ -53,14 +52,14 @@ fn bench_to_vector(c: &mut Criterion) {
         criterion::PlotConfiguration::default().summary_scale(criterion::AxisScale::Logarithmic),
     );
     for i in SAMPLE_SIZES {
-        let sample_size = 2_i32.checked_pow(i).unwrap() as usize;
+        let sample_size = 10000 * i as usize;
         group.bench_with_input(
             BenchmarkId::from_parameter(sample_size),
             &sample_size,
             |b, &size| {
                 // Generate the Newick string once outside the benchmark loop
                 let v = sample_vector(size, true);
-                let newick = ops::to_newick(&v);
+                let newick = ops::to_newick_from_vector(&v);
 
                 // Benchmark only the to_vector operation
                 b.iter(|| ops::to_vector(&newick));
