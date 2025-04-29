@@ -12,7 +12,7 @@ use newick::build_newick_from_pairs_with_bls;
 
 pub use vector::{
     build_vector, cophenetic_distances, find_coords_of_first_leaf, get_ancestry, get_pairs,
-    get_pairs_avl, make_avl_tree, order_cherries, order_cherries_no_parents,
+    order_cherries, order_cherries_no_parents,
 };
 
 pub use newick::{
@@ -22,13 +22,9 @@ pub use newick::{
 
 /// Recover a rooted tree (in Newick format) from a Phylo2Vec vector
 pub fn to_newick_from_vector(v: &Vec<usize>) -> String {
-    // // let ancestry: Ancestry = get_ancestry(&v);
-    // // build_newick(&ancestry)
-    let pairs: Pairs = match is_unordered(v) {
-        true => get_pairs_avl(v),
-        false => get_pairs(v),
-    };
-
+    // let ancestry: Ancestry = get_ancestry(&v);
+    // build_newick(&ancestry)
+    let pairs: Pairs = get_pairs(v);
     build_newick_from_pairs(&pairs)
 }
 

@@ -6,15 +6,7 @@ use std::collections::HashMap;
 /// Get the pair of nodes from the Phylo2Vec vector
 /// using a vector data structure and for loops
 /// implementation.
-///
-/// # Example
-/// ```
-/// use phylo2vec::tree_vec::ops::vector::get_pairs;
-///
-/// let v = vec![0, 0, 0, 1, 3, 3, 1, 4, 4];
-/// let pairs = get_pairs(&v);
-/// ```
-pub fn get_pairs(v: &Vec<usize>) -> Pairs {
+fn get_pairs_for(v: &Vec<usize>) -> Pairs {
     let num_of_leaves: usize = v.len();
     let mut pairs: Pairs = Vec::with_capacity(num_of_leaves);
 
@@ -53,7 +45,7 @@ pub fn get_pairs(v: &Vec<usize>) -> Pairs {
     pairs
 }
 
-pub fn make_avl_tree(v: &[usize]) -> AVLTree {
+fn make_avl_tree(v: &[usize]) -> AVLTree {
     // AVL tree implementation of get_pairs
     let k = v.len();
     let mut avl_tree = AVLTree::new();
@@ -75,17 +67,27 @@ pub fn make_avl_tree(v: &[usize]) -> AVLTree {
 
 /// Get the pair of nodes from the Phylo2Vec vector
 /// using an AVL tree data structure implementation.
+fn get_pairs_avl(v: &Vec<usize>) -> Pairs {
+    make_avl_tree(v).get_pairs()
+}
+
+/// Get the pair of nodes from the Phylo2Vec vector
+/// Implementation is determined based on whether
+/// the vector is unordered or ordered.
 ///
 /// # Example
 /// ```
-/// use phylo2vec::tree_vec::ops::vector::get_pairs_avl;
+/// use phylo2vec::tree_vec::ops::vector::get_pairs;
 ///
 /// let v = vec![0, 0, 0, 1, 3, 3, 1, 4, 4];
-/// let pairs = get_pairs_avl(&v);
+/// let pairs = get_pairs(&v);
 /// ```
-pub fn get_pairs_avl(v: &Vec<usize>) -> Pairs {
-    let avl_tree: AVLTree = make_avl_tree(v);
-    avl_tree.get_pairs()
+pub fn get_pairs(v: &Vec<usize>) -> Pairs {
+    if is_unordered(v) {
+        get_pairs_avl(v)
+    } else {
+        get_pairs_for(v)
+    }
 }
 
 /// Get the ancestry of the Phylo2Vec vector
@@ -105,19 +107,7 @@ pub fn get_pairs_avl(v: &Vec<usize>) -> Pairs {
 ///
 /// v[1] = 2 is somewhat similar: we create a new branch from R that yields leaf 2
 pub fn get_ancestry(v: &Vec<usize>) -> Ancestry {
-    let pairs: Pairs;
-
-    // Determine the implementation to use
-    // based on whether this is an ordered
-    // or unordered tree vector
-    match is_unordered(&v) {
-        true => {
-            pairs = get_pairs_avl(&v);
-        }
-        false => {
-            pairs = get_pairs(&v);
-        }
-    }
+    let pairs: Pairs = get_pairs(v);
     let num_of_leaves = v.len();
     // Initialize Ancestry with capacity `k`
     let mut ancestry: Ancestry = Vec::with_capacity(num_of_leaves);
