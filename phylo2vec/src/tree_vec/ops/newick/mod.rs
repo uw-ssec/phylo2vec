@@ -345,6 +345,41 @@ pub fn build_newick_from_pairs(pairs: &Pairs) -> String {
     cache[0].clone()
 }
 
+pub fn build_newick_from_pairs_with_bls(pairs: &Pairs, branch_lengths: &[[f32; 2]]) -> String {
+    let num_leaves = pairs.len() + 1;
+
+    // Faster than map+collect for some reason
+    let mut cache: Vec<String> = Vec::with_capacity(num_leaves);
+    for i in 0..num_leaves {
+        cache.push(i.to_string());
+    }
+
+    for (i, (&(c1, c2), &[bl1, bl2])) in pairs.iter().zip(branch_lengths.iter()).enumerate() {
+        let s1 = std::mem::take(&mut cache[c1]);
+        let s2 = std::mem::take(&mut cache[c2]);
+        let sp = (num_leaves + i).to_string();
+        let sb1 = bl1.to_string();
+        let sb2 = bl2.to_string();
+
+        let capacity = s1.len() + s2.len() + sp.len() + sb1.len() + sb2.len() + 5;
+        let mut sub_newick = String::with_capacity(capacity);
+        sub_newick.push('(');
+        sub_newick.push_str(&s1);
+        sub_newick.push(':');
+        sub_newick.push_str(&sb1);
+        sub_newick.push(',');
+        sub_newick.push_str(&s2);
+        sub_newick.push(':');
+        sub_newick.push_str(&sb2);
+        sub_newick.push(')');
+        sub_newick.push_str(&sp);
+        cache[c1] = sub_newick;
+    }
+
+    cache[0].push(';');
+    cache[0].clone()
+}
+
 /// Build newick string from the ancestry matrix and branch lengths
 pub fn build_newick_from_ancestry_with_bls(
     ancestry: &Ancestry,
