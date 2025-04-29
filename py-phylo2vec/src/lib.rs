@@ -36,7 +36,7 @@ fn get_ancestry(input_vector: Vec<usize>) -> Vec<[usize; 3]> {
 
 #[pyfunction]
 fn build_newick(input_ancestry: Vec<[usize; 3]>) -> String {
-    let newick_string: String = ops::newick::build_newick(&input_ancestry);
+    let newick_string: String = ops::newick::build_newick_from_ancestry(&input_ancestry);
     newick_string
 }
 

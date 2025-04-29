@@ -3,21 +3,29 @@ pub mod matrix;
 pub mod newick;
 pub mod vector;
 
-use crate::{tree_vec::types::Ancestry, utils::check_m};
+use crate::{
+    tree_vec::types::{Ancestry, Pairs},
+    utils::{check_m, is_unordered},
+};
 use matrix::parse_matrix;
-use newick::build_newick_with_bls;
+use newick::build_newick_from_pairs_with_bls;
 
 pub use vector::{
     build_vector, cophenetic_distances, find_coords_of_first_leaf, get_ancestry, get_pairs,
-    get_pairs_avl, order_cherries, order_cherries_no_parents,
+    order_cherries, order_cherries_no_parents,
 };
 
-pub use newick::{build_newick, get_cherries, get_cherries_no_parents, has_parents};
+pub use newick::{
+    build_newick_from_ancestry, build_newick_from_pairs, get_cherries, get_cherries_no_parents,
+    has_parents,
+};
 
 /// Recover a rooted tree (in Newick format) from a Phylo2Vec vector
 pub fn to_newick_from_vector(v: &Vec<usize>) -> String {
-    let ancestry: Ancestry = get_ancestry(&v);
-    build_newick(&ancestry)
+    // let ancestry: Ancestry = get_ancestry(&v);
+    // build_newick(&ancestry)
+    let pairs: Pairs = get_pairs(v);
+    build_newick_from_pairs(&pairs)
 }
 
 /// Recover a rooted tree (in Newick format) from a Phylo2Vec matrix
@@ -25,9 +33,9 @@ pub fn to_newick_from_matrix(m: &Vec<Vec<f32>>) -> String {
     // First, check the matrix structure for validity
     check_m(m);
 
-    let (v, bls) = parse_matrix(&m);
-    let ancestry = get_ancestry(&v);
-    build_newick_with_bls(&ancestry, &bls)
+    let (v, bls) = parse_matrix(m);
+    let pairs: Pairs = get_pairs(&v);
+    build_newick_from_pairs_with_bls(&pairs, &bls)
 }
 
 /// Recover a Phylo2Vec vector from a rooted tree (in Newick format)
@@ -164,9 +172,9 @@ mod tests {
     #[rstest]
     #[case(vec![
         vec![0.0, 0.9, 0.4],
-        vec![0.0, 0.8, 3.0],
+        vec![0.0, 0.8, 3.12],
         vec![3.0, 0.4, 0.5],
-    ], "(((0:0.9,2:0.4)4:0.8,3:3.0)5:0.4,1:0.5)6;")]
+    ], "(((0:0.9,2:0.4)4:0.8,3:3.12)5:0.4,1:0.5)6;")]
     #[case(vec![
         vec![0.0, 0.1, 0.2],
     ], "(0:0.1,1:0.2)2;")]
@@ -174,7 +182,7 @@ mod tests {
         vec![0.0, 0.0, 0.0],
         vec![0.0, 0.1, 0.2],
         vec![1.0, 0.5, 0.7],
-    ], "((0:0.1,2:0.2)5:0.5,(1:0.0,3:0.0)4:0.7)6;")]
+    ], "((0:0.1,2:0.2)5:0.5,(1:0,3:0)4:0.7)6;")]
     fn test_to_newick_from_matrix(#[case] m: Vec<Vec<f32>>, #[case] expected: &str) {
         let newick = to_newick_from_matrix(&m);
         assert_eq!(newick, expected);
